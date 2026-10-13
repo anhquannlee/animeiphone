@@ -1,4 +1,5 @@
 import Foundation
+import WebKit
 
 enum APIError: Error, CustomStringConvertible {
     case invalidURL
@@ -42,6 +43,16 @@ final class APIClient {
         URL(string: "https://animevietsub.nl")!,
         URL(string: "https://animevietsub.plus")!
     ]
+
+    func setBaseURL(_ value: String) -> Bool {
+        var raw = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !raw.hasPrefix("http://") && !raw.hasPrefix("https://") {
+            raw = "https://" + raw
+        }
+        guard let url = URL(string: raw), url.host != nil else { return false }
+        baseURL = url
+        return true
+    }
     var session: URLSession = {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 20

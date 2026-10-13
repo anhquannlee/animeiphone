@@ -82,7 +82,45 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
 
     private func presentError(_ error: APIError) {
-        let alert = UIAlertController(title: "Không thể tải dữ liệu", message: String(describing: error), preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: "Không thể tải dữ liệu",
+            message: "\(error)\nBạn có thể nhập domain khác hoặc mở website để xử lý Cloudflare trước.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Thử lại", style: .default) { [weak self] _ in
+            self?.load()
+        })
+        alert.addAction(UIAlertAction(title: "Nhập link website", style: .default) { [weak self] _ in
+            self?.requestSiteURL()
+        })
+        alert.addAction(UIAlertAction(title: "Đóng", style: .cancel))
+        present(alert, animated: true)
+    }
+
+    private func requestSiteURL() {
+        let alert = UIAlertController(title: "Nhập link website", message: "Ví dụ: animevietsub.xyz", preferredStyle: .alert)
+        alert.addTextField { field in
+            field.text = APIClient.shared.baseURL.absoluteString
+            field.keyboardType = .URL
+            field.autocapitalizationType = .none
+        }
+        alert.addAction(UIAlertAction(title: "Mở website", style: .default) { [weak self, weak alert] _ in
+            guard let self = self, let value = alert?.textFields?.first?.text,
+                  APIClient.shared.setBaseURL(value) else {
+                self?.showInvalidURL()
+                return
+            }
+            let bootstrap = SiteBootstrapViewController(url: APIClient.shared.baseURL) { [weak self] _ in
+                self?.dismiss(animated: true) { self?.load() }
+            }
+            self?.present(UINavigationController(rootViewController: bootstrap), animated: true)
+        })
+        alert.addAction(UIAlertAction(title: "Hủy", style: .cancel))
+        present(alert, animated: true)
+    }
+
+    private func showInvalidURL() {
+        let alert = UIAlertController(title: "Link không hợp lệ", message: "Hãy nhập tên miền hoặc URL bắt đầu bằng http:// hoặc https://.", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Đóng", style: .default))
         present(alert, animated: true)
     }

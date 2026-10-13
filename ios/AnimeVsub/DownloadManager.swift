@@ -230,7 +230,8 @@ final class DownloadManager: NSObject, AVAssetDownloadDelegate {
                                destination: URL, current: Int) {
         if current == 0, let mapURL = mapURL {
             fetchBytes(id: id, url: mapURL) { [weak self] data, error in
-                guard let self = self, let data = data else {
+                guard let self = self else { return }
+                guard let data = data else {
                     self.setError(id: id, message: error ?? "không tải được header video")
                     return
                 }

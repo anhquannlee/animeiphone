@@ -7,6 +7,7 @@ final class DetailViewController: UIViewController, UITableViewDataSource, UITab
     private let episodesLabel = UILabel()
     private let tableView = UITableView(frame: .zero, style: .plain)
     private var episodes = [ChapterInfo]()
+    private let downloadAllButton = UIButton(type: .system)
 
     init(anime: AnimeCard) {
         self.anime = anime
@@ -39,7 +40,13 @@ final class DetailViewController: UIViewController, UITableViewDataSource, UITab
         playButton.backgroundColor = UIColor(red: 0.82, green: 0.18, blue: 0.45, alpha: 1)
         playButton.layer.cornerRadius = 7
         playButton.addTarget(self, action: #selector(play), for: .touchUpInside)
-        [imageView, textLabel, playButton, episodesLabel, tableView].forEach {
+        downloadAllButton.setTitle("  Tải cả bộ  ", for: .normal)
+        downloadAllButton.setTitleColor(.white, for: .normal)
+        downloadAllButton.backgroundColor = UIColor(white: 0.2, alpha: 1)
+        downloadAllButton.layer.cornerRadius = 7
+        downloadAllButton.isEnabled = false
+        downloadAllButton.addTarget(self, action: #selector(downloadAll), for: .touchUpInside)
+        [imageView, textLabel, playButton, downloadAllButton, episodesLabel, tableView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
@@ -54,6 +61,10 @@ final class DetailViewController: UIViewController, UITableViewDataSource, UITab
             playButton.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 12),
             playButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             playButton.heightAnchor.constraint(equalToConstant: 38),
+            downloadAllButton.topAnchor.constraint(equalTo: playButton.topAnchor),
+            downloadAllButton.leadingAnchor.constraint(equalTo: playButton.trailingAnchor, constant: 8),
+            downloadAllButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
+            downloadAllButton.heightAnchor.constraint(equalTo: playButton.heightAnchor),
             episodesLabel.topAnchor.constraint(equalTo: playButton.bottomAnchor, constant: 16),
             episodesLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             episodesLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
@@ -64,6 +75,16 @@ final class DetailViewController: UIViewController, UITableViewDataSource, UITab
         ])
         if let url = URL(string: anime.image) { imageView.load(url: url) }
         loadEpisodes()
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshDownloadProgress),
+                                               name: DownloadManager.didChange, object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    @objc private func refreshDownloadProgress() {
+        tableView.reloadData()
     }
 
     @objc private func play() {
@@ -81,11 +102,23 @@ final class DetailViewController: UIViewController, UITableViewDataSource, UITab
             case .success(let episodes):
                 self.episodes = episodes
                 self.episodesLabel.text = "Danh sách tập (\(episodes.count))"
+                self.downloadAllButton.isEnabled = !episodes.isEmpty
                 self.tableView.reloadData()
             case .failure:
                 self.episodesLabel.text = "Chưa lấy được danh sách tập. Hãy thử lại sau."
             }
         }
+    }
+
+    @objc private func downloadAll() {
+        guard !episodes.isEmpty else { return }
+        DownloadManager.shared.downloadAll(title: anime.name, collectionID: anime.animeId,
+                                            chapters: episodes)
+        let alert = UIAlertController(title: "Đã xếp hàng tải cả bộ",
+                                      message: "\(episodes.count) tập sẽ được lấy link và tải lần lượt. Xem tiến trình trong tab Đã tải.",
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Đóng", style: .default))
+        present(alert, animated: true)
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -98,6 +131,9 @@ final class DetailViewController: UIViewController, UITableViewDataSource, UITab
     ) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "EpisodeCell", for: indexPath)
         cell.textLabel?.text = episodes[indexPath.row].name
+        if let record = DownloadManager.shared.allRecords().first(where: { $0.id == episodes[indexPath.row].id }) {
+            cell.textLabel?.text = "\(episodes[indexPath.row].name)  •  \(Int(record.progress * 100))%"
+        }
         cell.textLabel?.textColor = .white
         cell.backgroundColor = UIColor(white: 0.12, alpha: 1)
         return cell

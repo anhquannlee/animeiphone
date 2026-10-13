@@ -3,6 +3,7 @@ import AVKit
 
 final class HistoryViewController: UITableViewController {
     private var records = [DownloadRecord]()
+    private var groups = [(String, [DownloadRecord])]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,6 +18,8 @@ final class HistoryViewController: UITableViewController {
 
     @objc private func reloadRecords() {
         records = DownloadManager.shared.allRecords()
+        let grouped = Dictionary(grouping: records) { $0.collectionID ?? $0.id }
+        groups = grouped.map { ($0.key, $0.value) }.sorted { $0.0 < $1.0 }
         tableView.reloadData()
     }
 
@@ -25,15 +28,16 @@ final class HistoryViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        records.count
+        groups.count
     }
 
     override func tableView(_ tableView: UITableView,
                             cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DownloadCell", for: indexPath)
-        let record = records[indexPath.row]
-        let percent = Int(record.progress * 100)
-        cell.textLabel?.text = "\(record.title)\n\(status(record, percent: percent))"
+        let group = groups[indexPath.row].1
+        let done = group.filter { $0.state == "downloaded" }.count
+        let progress = group.reduce(0) { $0 + $1.progress } / Double(max(group.count, 1))
+        cell.textLabel?.text = "\(group.first?.title ?? "AnimeVsub")\n\(done)/\(group.count) tập — \(Int(progress * 100))%"
         cell.textLabel?.textColor = .white
         cell.textLabel?.numberOfLines = 2
         cell.backgroundColor = UIColor(white: 0.12, alpha: 1)
@@ -41,7 +45,8 @@ final class HistoryViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let record = records[indexPath.row]
+        let record = groups[indexPath.row].1.first(where: { $0.state == "downloaded" })
+        guard let record = record else { return }
         guard let url = DownloadManager.shared.assetDownloadURL(for: record) else { return }
         let controller = AVPlayerViewController()
         controller.player = AVPlayer(url: url)
@@ -50,9 +55,4 @@ final class HistoryViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
     }
 
-    private func status(_ record: DownloadRecord, percent: Int) -> String {
-        if record.state == "downloaded" { return "Đã tải — chạm để xem" }
-        if record.state == "downloading" { return "Đang tải \(percent)%" }
-        return record.state
-    }
 }

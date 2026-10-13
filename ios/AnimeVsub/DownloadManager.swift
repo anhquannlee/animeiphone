@@ -5,6 +5,7 @@ struct DownloadRecord: Codable {
     let id: String
     let title: String
     let sourceURL: String
+    let collectionID: String?
     var localURL: String?
     var progress: Double
     var state: String
@@ -44,6 +45,10 @@ final class DownloadManager: NSObject, AVAssetDownloadDelegate {
     }
 
     func start(title: String, id: String, url: URL) {
+        start(title: title, id: id, collectionID: nil, url: url)
+    }
+
+    func start(title: String, id: String, collectionID: String?, url: URL) {
         if let existing = records.first(where: { $0.id == id }), existing.state == "downloading" {
             return
         }
@@ -55,6 +60,7 @@ final class DownloadManager: NSObject, AVAssetDownloadDelegate {
         ])
         records.removeAll { $0.id == id }
         records.append(DownloadRecord(id: id, title: title, sourceURL: url.absoluteString,
+                                      collectionID: collectionID,
                                       localURL: nil, progress: 0, state: "starting"))
         guard let task = session.makeAssetDownloadTask(asset: asset,
                                                        assetTitle: title,
@@ -69,6 +75,47 @@ final class DownloadManager: NSObject, AVAssetDownloadDelegate {
         tasks[task] = id
         save()
         task.resume()
+        notify()
+    }
+
+    func downloadAll(title: String, collectionID: String, chapters: [ChapterInfo]) {
+        let pending = chapters.filter { chapter in
+            !records.contains(where: { $0.id == chapter.id && $0.state == "downloaded" })
+        }
+        fetchNext(title: title, collectionID: collectionID, chapters: pending)
+    }
+
+    private func fetchNext(title: String, collectionID: String, chapters: [ChapterInfo]) {
+        guard let chapter = chapters.first else {
+            notify()
+            return
+        }
+        APIClient.shared.player(chapter: chapter) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let data):
+                if let url = URL(string: data.link) {
+                    self.start(title: "\(title) - \(chapter.name)", id: chapter.id,
+                               collectionID: collectionID, url: url)
+                } else {
+                    self.addFailed(title: "\(title) - \(chapter.name)", id: chapter.id,
+                                   collectionID: collectionID, message: "link không hợp lệ")
+                }
+            case .failure(let error):
+                self.addFailed(title: "\(title) - \(chapter.name)", id: chapter.id,
+                               collectionID: collectionID, message: error.description)
+            }
+            self.fetchNext(title: title, collectionID: collectionID,
+                           chapters: Array(chapters.dropFirst()))
+        }
+    }
+
+    private func addFailed(title: String, id: String, collectionID: String, message: String) {
+        records.removeAll { $0.id == id }
+        records.append(DownloadRecord(id: id, title: title, sourceURL: "",
+                                      collectionID: collectionID, localURL: nil,
+                                      progress: 0, state: "error: \(message)"))
+        save()
         notify()
     }
 

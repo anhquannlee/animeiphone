@@ -331,7 +331,7 @@ private enum HTMLParser {
                 ?? ""
             let titlePattern = #"<(?:div|span|a)[^>]+class=["'][^"']*\bTitle\b[^"']*["'][^>]*>([\s\S]*?)</(?:div|span|a)>"#
             let name = firstCapture(titlePattern, in: region)
-                .map { text(in: $0).trimmingCharacters(in: .whitespacesAndNewlines) }
+                .map { cleanTitle(text(in: $0)) }
                 ?? attribute("title", in: region)
                 ?? ""
             guard !name.isEmpty else { return }
@@ -492,6 +492,15 @@ private enum HTMLParser {
             .replacingOccurrences(of: "&quot;", with: "\"")
             .replacingOccurrences(of: "&#39;", with: "'")
             .replacingOccurrences(of: "&nbsp;", with: " ")
+    }
+
+    private static func cleanTitle(_ value: String) -> String {
+        var title = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        title = title.replacingOccurrences(of: #"\s*(?:đánh giá|rating)\s*:?\s*\d+(?:[.,]\d+)?\s*(?:/|trên)?\s*10?\s*"#,
+                                           with: " ", options: [.regularExpression, .caseInsensitive])
+        title = title.replacingOccurrences(of: #"\s+\d+(?:[.,]\d+)?\s*/\s*10\s*$"#,
+                                           with: "", options: [.regularExpression])
+        return title.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     private static func absolute(_ value: String) -> String {

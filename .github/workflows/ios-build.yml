@@ -21,7 +21,7 @@ jobs:
           xcode-version: "15.4"
 
       - name: Install XcodeGen
-        run: brew install xcodegen
+        run: brew install xcodegen ldid
 
       - name: Generate Xcode project
         run: |
@@ -50,6 +50,22 @@ jobs:
         run: |
           APP_PATH="build/DerivedData/Build/Products/Release-iphoneos/AnimeVsub.app"
           test -d "$APP_PATH"
+          cat > build/AnimeVsub.entitlements <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>application-identifier</key>
+              <string>ANIMEVSUB.git.shin.animevsub.ios</string>
+              <key>com.apple.developer.team-identifier</key>
+              <string>ANIMEVSUB</string>
+              <key>get-task-allow</key>
+              <true/>
+          </dict>
+          </plist>
+          EOF
+          ldid -Sbuild/AnimeVsub.entitlements "$APP_PATH/AnimeVsub"
+          ldid -e "$APP_PATH/AnimeVsub"
           mkdir -p build/unsigned/Payload
           cp -R "$APP_PATH" build/unsigned/Payload/
           (

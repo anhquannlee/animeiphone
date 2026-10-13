@@ -11,8 +11,7 @@ final class MainTabBarController: UITabBarController {
         home.tabBarItem = UITabBarItem(tabBarSystemItem: .featured, tag: 0)
         let search = UINavigationController(rootViewController: SearchViewController())
         search.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 1)
-        let history = UIViewController()
-        history.view.backgroundColor = .black
+        let history = UINavigationController(rootViewController: HistoryViewController())
         history.tabBarItem = UITabBarItem(tabBarSystemItem: .history, tag: 2)
         viewControllers = [home, search, history]
     }

@@ -33,6 +33,21 @@ final class DownloadManager: NSObject, AVAssetDownloadDelegate {
            let saved = try? JSONDecoder().decode([DownloadRecord].self, from: data) {
             records = saved
         }
+        session.getAllTasks { [weak self] tasks in
+            guard let self = self else { return }
+            for task in tasks {
+                guard let downloadTask = task as? AVAssetDownloadTask,
+                      let id = downloadTask.taskDescription,
+                      self.records.contains(where: { $0.id == id }) else { continue }
+                self.tasks[downloadTask] = id
+                if let index = self.records.firstIndex(where: { $0.id == id }),
+                   self.records[index].state != "downloaded" {
+                    self.records[index].state = "downloading"
+                }
+            }
+            self.save()
+            self.notify()
+        }
     }
 
     func allRecords() -> [DownloadRecord] {
@@ -76,6 +91,7 @@ final class DownloadManager: NSObject, AVAssetDownloadDelegate {
             return
         }
         records[records.count - 1].state = "downloading"
+        task.taskDescription = id
         tasks[task] = id
         save()
         task.resume()
@@ -160,7 +176,7 @@ final class DownloadManager: NSObject, AVAssetDownloadDelegate {
             $0 + CMTimeGetSeconds($1.timeRangeValue.duration)
         }
         let expected = CMTimeGetSeconds(timeRangeExpectedToLoad.duration)
-        records[index].progress = expected > 0 ? min(loaded / expected, 1) : 0
+        records[index].progress = expected > 0 ? min(loaded / expected, 1) : -1
         save()
         notify()
     }
@@ -198,6 +214,10 @@ final class DownloadManager: NSObject, AVAssetDownloadDelegate {
               let index = records.firstIndex(where: { $0.id == id }) else { return }
         if let error = error {
             records[index].state = "error: \(error.localizedDescription)"
+            save()
+            notify()
+        } else if records[index].state != "downloaded" {
+            records[index].state = "error: tải kết thúc nhưng không tạo được file"
             save()
             notify()
         }

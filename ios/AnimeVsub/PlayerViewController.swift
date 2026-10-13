@@ -5,15 +5,26 @@ final class PlayerViewController: AVPlayerViewController {
     private let chapter: ChapterInfo
     private let episodeTitle: String
     private let animeID: String
+    private let animeTitle: String
+    private let animePoster: String?
     private var playerURL: URL?
     private var playerData: PlayerData?
     private var didLoad = false
     private let loadingLabel = UILabel()
+    private var timeObserverToken: Any?
 
-    init(chapter: ChapterInfo, title: String, animeID: String = "") {
+    init(
+        chapter: ChapterInfo,
+        title: String,
+        animeID: String = "",
+        animeTitle: String = "",
+        animePoster: String? = nil
+    ) {
         self.chapter = chapter
         self.episodeTitle = title
         self.animeID = animeID
+        self.animeTitle = animeTitle.isEmpty ? title : animeTitle
+        self.animePoster = animePoster
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -62,13 +73,52 @@ final class PlayerViewController: AVPlayerViewController {
                     name: .AVPlayerItemFailedToPlayToEndTime,
                     object: item
                 )
-                self?.player = AVPlayer(playerItem: item)
-                self?.player?.play()
+                let avPlayer = AVPlayer(playerItem: item)
+                self?.player = avPlayer
+                self?.setupWatchHistoryTracking(for: avPlayer)
+                avPlayer.play()
             case .failure(let error):
                 self?.loadingLabel.text = "Không lấy được link native."
                 self?.showPlaybackError("\(error)\nCó thể mở trình phát website để server tự giải mã.", url: nil)
             }
         }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        saveCurrentProgress()
+        if let token = timeObserverToken, let player = player {
+            player.removeTimeObserver(token)
+            timeObserverToken = nil
+        }
+    }
+
+    private func setupWatchHistoryTracking(for player: AVPlayer) {
+        let interval = CMTime(seconds: 5.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+        timeObserverToken = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
+            self?.recordProgress(currentTime: time.seconds)
+        }
+    }
+
+    private func recordProgress(currentTime: Double) {
+        guard let currentItem = player?.currentItem, currentTime > 0 else { return }
+        let duration = currentItem.duration.seconds
+        guard duration.isFinite && duration > 0 else { return }
+        let id = animeID.isEmpty ? chapter.id : animeID
+        WatchHistoryManager.shared.record(
+            animeId: id,
+            animeTitle: animeTitle,
+            episodeId: chapter.id,
+            episodeTitle: episodeTitle,
+            image: animePoster,
+            position: currentTime,
+            duration: duration
+        )
+    }
+
+    private func saveCurrentProgress() {
+        guard let player = player else { return }
+        recordProgress(currentTime: player.currentTime().seconds)
     }
 
     @objc private func itemFailed(_ notification: Notification) {
@@ -117,5 +167,8 @@ final class PlayerViewController: AVPlayerViewController {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+        if let token = timeObserverToken, let player = player {
+            player.removeTimeObserver(token)
+        }
     }
 }

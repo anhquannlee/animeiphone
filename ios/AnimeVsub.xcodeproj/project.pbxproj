@@ -9,8 +9,12 @@
 /* Begin PBXBuildFile section */
 		02DAF0D973E13948AD52204A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 632E44345A2BA770F86A2A64 /* README.md */; };
 		0D55B149847A72A03F91CAA8 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14FFC876257DD19058385DA5 /* Models.swift */; };
+		10457EF108212B504E9A9F26 /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0574EDB933AB07D281CE6765 /* DownloadManager.swift */; };
 		1077DAC22C12B0467B5CD8B4 /* SiteBootstrapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462F593D016844FB5FD4865 /* SiteBootstrapViewController.swift */; };
 		2339C5EB1B22D72686DD278B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D9DC6BB3481954CCA13639 /* AppDelegate.swift */; };
+		399EBFF6742805A21A32842F /* WatchHistoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4002D88ADE41C86279C75CD4 /* WatchHistoryManager.swift */; };
+		4652BCFF5160118B4410F438 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74CB9BA4BD193315C64ED437 /* SettingsViewController.swift */; };
+		54E0EBB38D412BFAF1EE201A /* WebPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E196D63D14BC988CA4DAA10 /* WebPlayerViewController.swift */; };
 		5604DFC5D969AF1931D60CB4 /* AnimeCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E643CFB1677ECEE66512F0 /* AnimeCardCell.swift */; };
 		6F040807F28DB13A3CE6E97B /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD385212DE6BD6287E7BA67C /* PlayerViewController.swift */; };
 		9ACD035F65291ACD176C5845 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDB22EC51CA2A30DF49ABF85 /* MainTabBarController.swift */; };
@@ -20,18 +24,24 @@
 		D5DAD0AF7377F9F160B8DD00 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C2DB2B66008D8BEA913E6E35 /* LaunchScreen.storyboard */; };
 		DAD33745EDE8DB4B7C630D07 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B290DE912234D8B4A7E48499 /* APIClient.swift */; };
 		E7B707A7C10F73FAC2E43D09 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46D3AAC03F515960E194298 /* DetailViewController.swift */; };
+		F8DC759F3BB57264CDCA943A /* HistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D781E725BCB064312550F83 /* HistoryViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0574EDB933AB07D281CE6765 /* DownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
 		06E643CFB1677ECEE66512F0 /* AnimeCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimeCardCell.swift; sourceTree = "<group>"; };
 		14FFC876257DD19058385DA5 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		16D9DC6BB3481954CCA13639 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2462F593D016844FB5FD4865 /* SiteBootstrapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteBootstrapViewController.swift; sourceTree = "<group>"; };
+		2D781E725BCB064312550F83 /* HistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewController.swift; sourceTree = "<group>"; };
+		4002D88ADE41C86279C75CD4 /* WatchHistoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchHistoryManager.swift; sourceTree = "<group>"; };
 		4C439EF8D0E15574FFA050DB /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
 		5641D85AA53C12BD3C928C55 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		5649787FF59FEEF5DDFE1287 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		632E44345A2BA770F86A2A64 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		74CB9BA4BD193315C64ED437 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		7C323AB4ABFE7B28370ABAE1 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		9E196D63D14BC988CA4DAA10 /* WebPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPlayerViewController.swift; sourceTree = "<group>"; };
 		B290DE912234D8B4A7E48499 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		C2DB2B66008D8BEA913E6E35 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DD385212DE6BD6287E7BA67C /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
@@ -64,6 +74,8 @@
 				B290DE912234D8B4A7E48499 /* APIClient.swift */,
 				16D9DC6BB3481954CCA13639 /* AppDelegate.swift */,
 				E46D3AAC03F515960E194298 /* DetailViewController.swift */,
+				0574EDB933AB07D281CE6765 /* DownloadManager.swift */,
+				2D781E725BCB064312550F83 /* HistoryViewController.swift */,
 				7C323AB4ABFE7B28370ABAE1 /* HomeViewController.swift */,
 				4C439EF8D0E15574FFA050DB /* ImageLoader.swift */,
 				5649787FF59FEEF5DDFE1287 /* Info.plist */,
@@ -73,7 +85,10 @@
 				DD385212DE6BD6287E7BA67C /* PlayerViewController.swift */,
 				632E44345A2BA770F86A2A64 /* README.md */,
 				5641D85AA53C12BD3C928C55 /* SearchViewController.swift */,
+				74CB9BA4BD193315C64ED437 /* SettingsViewController.swift */,
 				2462F593D016844FB5FD4865 /* SiteBootstrapViewController.swift */,
+				4002D88ADE41C86279C75CD4 /* WatchHistoryManager.swift */,
+				9E196D63D14BC988CA4DAA10 /* WebPlayerViewController.swift */,
 			);
 			path = AnimeVsub;
 			sourceTree = "<group>";
@@ -150,13 +165,18 @@
 				5604DFC5D969AF1931D60CB4 /* AnimeCardCell.swift in Sources */,
 				2339C5EB1B22D72686DD278B /* AppDelegate.swift in Sources */,
 				E7B707A7C10F73FAC2E43D09 /* DetailViewController.swift in Sources */,
+				10457EF108212B504E9A9F26 /* DownloadManager.swift in Sources */,
+				F8DC759F3BB57264CDCA943A /* HistoryViewController.swift in Sources */,
 				C6034B6B6A3DA4443F769006 /* HomeViewController.swift in Sources */,
 				CBAEF479E76CAC27095491EA /* ImageLoader.swift in Sources */,
 				9ACD035F65291ACD176C5845 /* MainTabBarController.swift in Sources */,
 				0D55B149847A72A03F91CAA8 /* Models.swift in Sources */,
 				6F040807F28DB13A3CE6E97B /* PlayerViewController.swift in Sources */,
 				D4B816F101887E0A152E09AE /* SearchViewController.swift in Sources */,
+				4652BCFF5160118B4410F438 /* SettingsViewController.swift in Sources */,
 				1077DAC22C12B0467B5CD8B4 /* SiteBootstrapViewController.swift in Sources */,
+				399EBFF6742805A21A32842F /* WatchHistoryManager.swift in Sources */,
+				54E0EBB38D412BFAF1EE201A /* WebPlayerViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

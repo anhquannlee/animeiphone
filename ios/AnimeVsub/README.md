@@ -14,8 +14,8 @@ open AnimeVsub.xcodeproj
 The client follows the desktop-web API contract: HTML pages plus POST routes
 `/ajax/item`, `/ajax/suggest`, `/ajax/player` and `/ajax/player?v=2019a`.
 The host is configurable through `APIClient.shared.baseURL`; the default is
-`https://animevietsub.pl`, which is the canonical domain and follows redirects
-to the active mirror. The Android `api_hidden` submodule is empty in this
+`https://animevietsub.xyz` and can be changed in the app. The Android
+`api_hidden` submodule is empty in this
 checkout, so the host may need to be changed to the currently active mirror.
 
 ## Current MVP
@@ -26,7 +26,11 @@ checkout, so the host may need to be changed to the currently active mirror.
 - Home data, search, detail and HLS player abstractions
 - iOS 10 deployment target
 
-The player currently expects a normal HLS URL. If the Android implementation transforms HLS segments, that transformation should be moved to a backend/proxy or implemented with `AVAssetResourceLoaderDelegate` before production release.
+The downloader first reads a normal HLS playlist, resolves master-playlist
+variants, and downloads clear segments one by one while reporting progress.
+Iframe links and encrypted/custom-transformed HLS are reported as unsupported;
+the Android app's hidden segment transformation cannot be reproduced from the
+public checkout without the corresponding authorized implementation.
 
 ## Unsigned IPA for a jailbroken iPhone
 

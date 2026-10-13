@@ -11,10 +11,10 @@ final class AnimeCardCell: UICollectionViewCell {
         posterView.clipsToBounds = true
         posterView.layer.cornerRadius = 7
         posterView.contentMode = .scaleAspectFill
-        titleLabel.font = UIFont.systemFont(ofSize: 13, weight: .medium)
+        titleLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         titleLabel.numberOfLines = 2
         titleLabel.textColor = .white
-        episodeLabel.font = UIFont.systemFont(ofSize: 10, weight: .bold)
+        episodeLabel.font = UIFont.systemFont(ofSize: 9, weight: .bold)
         episodeLabel.textColor = .white
         episodeLabel.backgroundColor = UIColor(red: 0.82, green: 0.18, blue: 0.45, alpha: 0.9)
         episodeLabel.layer.cornerRadius = 4

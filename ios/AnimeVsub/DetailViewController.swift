@@ -21,7 +21,7 @@ final class DetailViewController: UIViewController {
         imageView.layer.cornerRadius = 8
         textLabel.textColor = .white
         textLabel.numberOfLines = 0
-        textLabel.font = UIFont.systemFont(ofSize: 15)
+        textLabel.font = UIFont.systemFont(ofSize: 13)
         textLabel.text = "\(anime.name)\n\nChất lượng: \(anime.quality ?? "Đang cập nhật")"
         let playButton = UIButton(type: .system)
         playButton.setTitle("  Xem tập mới nhất  ", for: .normal)
@@ -31,16 +31,16 @@ final class DetailViewController: UIViewController {
         playButton.addTarget(self, action: #selector(play), for: .touchUpInside)
         [imageView, textLabel, playButton].forEach { $0.translatesAutoresizingMaskIntoConstraints = false; view.addSubview($0) }
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 16),
-            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            imageView.widthAnchor.constraint(equalToConstant: 130),
-            imageView.heightAnchor.constraint(equalToConstant: 195),
+            imageView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 10),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            imageView.widthAnchor.constraint(equalToConstant: 112),
+            imageView.heightAnchor.constraint(equalToConstant: 168),
             textLabel.topAnchor.constraint(equalTo: imageView.topAnchor),
             textLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 16),
-            textLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            playButton.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 20),
-            playButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            playButton.heightAnchor.constraint(equalToConstant: 44)
+            textLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
+            playButton.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 12),
+            playButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            playButton.heightAnchor.constraint(equalToConstant: 38)
         ])
         if let url = URL(string: anime.image) { imageView.load(url: url) }
     }

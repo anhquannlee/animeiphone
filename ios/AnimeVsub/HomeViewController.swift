@@ -7,8 +7,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
 
     init() {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 10
-        layout.minimumLineSpacing = 16
+        layout.minimumInteritemSpacing = 6
+        layout.minimumLineSpacing = 10
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         super.init(nibName: nil, bundle: nil)
     }
@@ -30,8 +30,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         load()
@@ -77,8 +77,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         let columns: CGFloat = traitCollection.horizontalSizeClass == .regular ? 5 : 3
-        let width = floor((collectionView.bounds.width - (columns - 1) * 10) / columns)
-        return CGSize(width: width, height: width * 1.5 + 42)
+        let width = floor((collectionView.bounds.width - (columns - 1) * 6) / columns)
+        return CGSize(width: width, height: width * 1.5 + 36)
     }
 
     private func presentError(_ error: APIError) {

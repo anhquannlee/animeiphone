@@ -1,6 +1,6 @@
 import Foundation
 
-enum APIError: Error {
+enum APIError: Error, CustomStringConvertible {
     case invalidURL
     case invalidResponse
     case server(statusCode: Int)
@@ -8,6 +8,20 @@ enum APIError: Error {
     case decoding(Error)
     case transport(Error)
     case unsupportedResponse
+
+    var description: String {
+        switch self {
+        case .server(let statusCode):
+            return "Máy chủ trả HTTP \(statusCode). Domain có thể đang chuyển hướng hoặc bị Cloudflare chặn."
+        case .transport(let error):
+            return "Lỗi kết nối: \(error.localizedDescription)"
+        case .invalidURL: return "URL máy chủ không hợp lệ."
+        case .invalidResponse: return "Phản hồi máy chủ không hợp lệ."
+        case .emptyResponse: return "Máy chủ trả dữ liệu rỗng."
+        case .decoding(let error): return "Không đọc được dữ liệu: \(error.localizedDescription)"
+        case .unsupportedResponse: return "Định dạng phản hồi chưa được hỗ trợ."
+        }
+    }
 }
 
 struct SearchSuggestion {
@@ -22,6 +36,12 @@ final class APIClient {
 
     /// The canonical domain redirects to the currently active mirror.
     var baseURL = URL(string: "https://animevietsub.xyz")!
+    private let fallbackBaseURLs = [
+        URL(string: "https://animevietsub.xyz")!,
+        URL(string: "https://animevietsub.link")!,
+        URL(string: "https://animevietsub.nl")!,
+        URL(string: "https://animevietsub.plus")!
+    ]
     var session: URLSession = {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 20
@@ -83,7 +103,30 @@ final class APIClient {
         parameters: [String: String] = [:],
         completion: @escaping (Result<Data, APIError>) -> Void
     ) {
-        guard let url = URL(string: path, relativeTo: baseURL)?.absoluteURL else {
+        requestRaw(
+            path: path,
+            method: method,
+            parameters: parameters,
+            baseURLs: [baseURL] + fallbackBaseURLs.filter { $0 != baseURL },
+            index: 0,
+            completion: completion
+        )
+    }
+
+    private func requestRaw(
+        path: String,
+        method: String,
+        parameters: [String: String],
+        baseURLs: [URL],
+        index: Int,
+        completion: @escaping (Result<Data, APIError>) -> Void
+    ) {
+        guard index < baseURLs.count else {
+            completion(.failure(.server(statusCode: 503)))
+            return
+        }
+        let currentBaseURL = baseURLs[index]
+        guard let url = URL(string: path, relativeTo: currentBaseURL)?.absoluteURL else {
             completion(.failure(.invalidURL))
             return
         }
@@ -94,7 +137,7 @@ final class APIClient {
             "Mozilla/5.0 (iPhone; CPU iPhone OS 12_5 like Mac OS X) AppleWebKit/605.1.15 Mobile Safari/604.1",
             forHTTPHeaderField: "User-Agent"
         )
-        request.setValue(baseURL.absoluteString, forHTTPHeaderField: "Referer")
+        request.setValue(currentBaseURL.absoluteString, forHTTPHeaderField: "Referer")
         if method == "POST" {
             request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
             request.httpBody = parameters
@@ -117,7 +160,14 @@ final class APIClient {
                 return
             }
             guard (200..<300).contains(http.statusCode) else {
-                DispatchQueue.main.async { completion(.failure(.server(statusCode: http.statusCode))) }
+                self.requestRaw(
+                    path: path,
+                    method: method,
+                    parameters: parameters,
+                    baseURLs: baseURLs,
+                    index: index + 1,
+                    completion: completion
+                )
                 return
             }
             guard let data = data, !data.isEmpty else {

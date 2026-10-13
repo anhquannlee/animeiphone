@@ -1,0 +1,55 @@
+name: iOS Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    env:
+      IOS_SCHEME: AnimeVsub
+      IOS_PROJECT: ios/AnimeVsub.xcodeproj
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "15.4"
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate --spec ios/project.yml
+
+      - name: Build unsigned app
+        run: |
+          mkdir -p build
+          xcodebuild build \
+            -project "$IOS_PROJECT" \
+            -scheme "$IOS_SCHEME" \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Package unsigned IPA
+        run: |
+          APP_PATH="build/DerivedData/Build/Products/Release-iphoneos/AnimeVsub.app"
+          test -d "$APP_PATH"
+          mkdir -p build/unsigned/Payload
+          cp -R "$APP_PATH" build/unsigned/Payload/
+          /usr/bin/zip -qry build/AnimeVsub-unsigned.ipa build/unsigned/Payload
+
+      - name: Upload iOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnimeVsub-iOS-${{ github.run_number }}
+          path: |
+            build/*.ipa
+          if-no-files-found: error

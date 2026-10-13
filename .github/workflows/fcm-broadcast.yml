@@ -1,0 +1,172 @@
+name: FCM Broadcast Notification
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: 'Notification title'
+        required: true
+        type: string
+      body:
+        description: 'Notification body text'
+        required: true
+        type: string
+      type:
+        description: 'Notification type'
+        required: true
+        default: 'general'
+        type: choice
+        options:
+          - general
+          - app_update
+          - maintenance
+          - promotion
+          - feature
+          - bugfix
+          - security
+      image:
+        description: 'Image URL for notification'
+        required: false
+        type: string
+      deep_link:
+        description: 'Deep link path (settings, notification, detail/{id}, episode/{id}/{chap})'
+        required: false
+        type: string
+      anime_id:
+        description: 'Anime ID for detail navigation'
+        required: false
+        type: string
+      chapter_id:
+        description: 'Chapter ID for episode navigation'
+        required: false
+        type: string
+      token:
+        description: 'FCM device token (overrides topics/condition)'
+        required: false
+        type: string
+      topics:
+        description: 'Comma-separated FCM topics (default: all_users)'
+        required: false
+        default: 'all_users'
+        type: string
+      dry_run:
+        description: 'Dry run mode (test without sending)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      android_config:
+        description: 'Android config as JSON (channel_id, priority, ttl, icon, color, visibility, notification_count, sound, vibrate_timings, light_settings, default_sound, default_vibrate, default_light, sticky, local_only, event_time, tag, click_action, link, group_key, group_alert, summary_text)'
+        required: false
+        type: string
+      apns_config:
+        description: 'APNs config as JSON (priority, ttl, collapse_id, thread_id, badge, sound)'
+        required: false
+        type: string
+      web_config:
+        description: 'Web config as JSON (ttl, urgency, fallback_title, fallback_body, fallback_icon)'
+        required: false
+        type: string
+      notification_id:
+        description: 'Custom notification ID'
+        required: false
+        type: string
+      condition:
+        description: 'FCM condition expression (overrides topics)'
+        required: false
+        type: string
+
+jobs:
+  send-broadcast:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Parse Android config
+        if: inputs.android_config
+        id: android_config
+        run: |
+          echo "${{ inputs.android_config }}" > /tmp/android_config.json
+          while IFS='=' read -r key value; do
+            [ -n "$key" ] && [ "$key" != "null" ] && echo "android_${key}=${value}" >> $GITHUB_OUTPUT
+          done < <(jq -r 'to_entries[] | "\(.key)=\(.value)"' /tmp/android_config.json)
+
+      - name: Parse APNs config
+        if: inputs.apns_config
+        id: apns_config
+        run: |
+          echo "${{ inputs.apns_config }}" > /tmp/apns_config.json
+          while IFS='=' read -r key value; do
+            [ -n "$key" ] && [ "$key" != "null" ] && echo "apns_${key}=${value}" >> $GITHUB_OUTPUT
+          done < <(jq -r 'to_entries[] | "\(.key)=\(.value)"' /tmp/apns_config.json)
+
+      - name: Parse Web config
+        if: inputs.web_config
+        id: web_config
+        run: |
+          echo "${{ inputs.web_config }}" > /tmp/web_config.json
+          while IFS='=' read -r key value; do
+            [ -n "$key" ] && [ "$key" != "null" ] && echo "web_${key}=${value}" >> $GITHUB_OUTPUT
+          done < <(jq -r 'to_entries[] | "\(.key)=\(.value)"' /tmp/web_config.json)
+
+      - name: Send FCM Broadcast
+        run: |
+          bun .github/scripts/send-fcm.ts \
+            --title="${{ inputs.title }}" \
+            --body="${{ inputs.body }}" \
+            --type="${{ inputs.type }}" \
+            ${{ inputs.image && format('--image="{0}"', inputs.image) || '' }} \
+            ${{ inputs.deep_link && format('--deep_link="{0}"', inputs.deep_link) || '' }} \
+            ${{ inputs.anime_id && format('--anime_id="{0}"', inputs.anime_id) || '' }} \
+            ${{ inputs.chapter_id && format('--chapter_id="{0}"', inputs.chapter_id) || '' }} \
+            ${{ inputs.notification_id && format('--id="{0}"', inputs.notification_id) || '' }} \
+            ${{ inputs.token && format('--token="{0}"', inputs.token) || '' }} \
+            ${{ inputs.topics && format('--topics="{0}"', inputs.topics) || '' }} \
+            ${{ inputs.condition && format('--condition="{0}"', inputs.condition) || '' }} \
+            ${{ steps.android_config.outputs.channel_id && format('--android_channel_id="{0}"', steps.android_config.outputs.channel_id) || '' }} \
+            ${{ steps.android_config.outputs.priority && format('--android_priority="{0}"', steps.android_config.outputs.priority) || '' }} \
+            ${{ steps.android_config.outputs.ttl && format('--android_ttl="{0}"', steps.android_config.outputs.ttl) || '' }} \
+            ${{ steps.android_config.outputs.icon && format('--android_icon="{0}"', steps.android_config.outputs.icon) || '' }} \
+            ${{ steps.android_config.outputs.color && format('--android_color="{0}"', steps.android_config.outputs.color) || '' }} \
+            ${{ steps.android_config.outputs.visibility && format('--android_visibility="{0}"', steps.android_config.outputs.visibility) || '' }} \
+            ${{ steps.android_config.outputs.notification_count && format('--android_notification_count="{0}"', steps.android_config.outputs.notification_count) || '' }} \
+            ${{ steps.android_config.outputs.sound && format('--android_sound="{0}"', steps.android_config.outputs.sound) || '' }} \
+            ${{ steps.android_config.outputs.vibrate_timings && format('--android_vibrate_timings="{0}"', steps.android_config.outputs.vibrate_timings) || '' }} \
+            ${{ steps.android_config.outputs.light_settings && format('--android_light_settings="{0}"', steps.android_config.outputs.light_settings) || '' }} \
+            ${{ steps.android_config.outputs.default_sound == 'true' && '--android_default_sound=true' || '' }} \
+            ${{ steps.android_config.outputs.default_vibrate == 'true' && '--android_default_vibrate_timings=true' || '' }} \
+            ${{ steps.android_config.outputs.default_light == 'true' && '--android_default_light_settings=true' || '' }} \
+            ${{ steps.android_config.outputs.sticky == 'true' && '--android_sticky=true' || '' }} \
+            ${{ steps.android_config.outputs.local_only == 'true' && '--android_local_only=true' || '' }} \
+            ${{ steps.android_config.outputs.event_time && format('--android_event_time="{0}"', steps.android_config.outputs.event_time) || '' }} \
+            ${{ steps.android_config.outputs.tag && format('--android_tag="{0}"', steps.android_config.outputs.tag) || '' }} \
+            ${{ steps.android_config.outputs.click_action && format('--android_click_action="{0}"', steps.android_config.outputs.click_action) || '' }} \
+            ${{ steps.android_config.outputs.link && format('--android_link="{0}"', steps.android_config.outputs.link) || '' }} \
+            ${{ steps.android_config.outputs.group_key && format('--android_group_key="{0}"', steps.android_config.outputs.group_key) || '' }} \
+            ${{ steps.android_config.outputs.group_alert && format('--android_group_alert_behavior="{0}"', steps.android_config.outputs.group_alert) || '' }} \
+            ${{ steps.android_config.outputs.summary_text && format('--android_summary_text="{0}"', steps.android_config.outputs.summary_text) || '' }} \
+            ${{ steps.apns_config.outputs.priority && format('--apns_priority="{0}"', steps.apns_config.outputs.priority) || '' }} \
+            ${{ steps.apns_config.outputs.ttl && format('--apns_ttl="{0}"', steps.apns_config.outputs.ttl) || '' }} \
+            ${{ steps.apns_config.outputs.collapse_id && format('--apns_collapse_id="{0}"', steps.apns_config.outputs.collapse_id) || '' }} \
+            ${{ steps.apns_config.outputs.thread_id && format('--apns_thread_id="{0}"', steps.apns_config.outputs.thread_id) || '' }} \
+            ${{ steps.apns_config.outputs.badge && format('--apns_badge="{0}"', steps.apns_config.outputs.badge) || '' }} \
+            ${{ steps.apns_config.outputs.sound && format('--apns_sound="{0}"', steps.apns_config.outputs.sound) || '' }} \
+            ${{ steps.web_config.outputs.ttl && format('--web_ttl="{0}"', steps.web_config.outputs.ttl) || '' }} \
+            ${{ steps.web_config.outputs.urgency && format('--web_urgency="{0}"', steps.web_config.outputs.urgency) || '' }} \
+            ${{ steps.web_config.outputs.fallback_title && format('--web_fallback_title="{0}"', steps.web_config.outputs.fallback_title) || '' }} \
+            ${{ steps.web_config.outputs.fallback_body && format('--web_fallback_body="{0}"', steps.web_config.outputs.fallback_body) || '' }} \
+            ${{ steps.web_config.outputs.fallback_icon && format('--web_fallback_icon="{0}"', steps.web_config.outputs.fallback_icon) || '' }} \
+            --dry_run="${{ inputs.dry_run }}"
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}

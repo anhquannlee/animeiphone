@@ -1,0 +1,3 @@
+echo "Running pre-commit checks..."
+
+./gradlew ktlintCheck detekt lintDebug --parallel --build-cache

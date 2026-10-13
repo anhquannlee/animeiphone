@@ -1,0 +1,419 @@
+## [2.12.3](https://github.com/anime-vsub/app/compare/v2.12.2...v2.12.3) (2026-09-19)
+
+
+### Bug Fixes
+
+* update core api for fix error 403 ([77eb43b](https://github.com/anime-vsub/app/commit/77eb43b92243dfa5d5eca8ce9aedbdfa9b6b56b0))
+
+## [2.12.2](https://github.com/anime-vsub/app/compare/v2.12.1...v2.12.2) (2026-08-07)
+
+
+### Bug Fixes
+
+* prevent player loading stalls ([e8e5fec](https://github.com/anime-vsub/app/commit/e8e5fecdcd168e899f138d8250fb728d4c040af6))
+
+## [2.12.1](https://github.com/anime-vsub/app/compare/v2.12.0...v2.12.1) (2026-06-16)
+
+
+### Bug Fixes
+
+* allow image load with cookie manager ([27b1281](https://github.com/anime-vsub/app/commit/27b12816659eed59ce1c994cb37ba3f420096e21))
+
+# [2.12.0](https://github.com/anime-vsub/app/compare/v2.11.2...v2.12.0) (2026-06-04)
+
+
+### Bug Fixes
+
+* update network configuration and Cloudflare bypass handling ([0a16906](https://github.com/anime-vsub/app/commit/0a169060eeed7f32bafbfcabcd6938a5f4e43b44))
+
+
+### Features
+
+* implement DNS over HTTPS (DoH) support ([dcce401](https://github.com/anime-vsub/app/commit/dcce401d41b2f8c31057f47ce19b8c8a1a160b84))
+
+## [2.11.2](https://github.com/anime-vsub/app/compare/v2.11.1...v2.11.2) (2026-05-30)
+
+
+### Bug Fixes
+
+* **update:** close network responses properly ([f9015e4](https://github.com/anime-vsub/app/commit/f9015e4261f4e847ae44e2a5595b8ba8fd8c5663))
+* **webview:** destroy WebView on dispose ([bac33c6](https://github.com/anime-vsub/app/commit/bac33c65b73ffcad9b7e6aea00cdf0fcdfe09e6b))
+
+
+### Performance Improvements
+
+* **data:** Limit in-memory lists and optimize AI cache ([b1e7e7d](https://github.com/anime-vsub/app/commit/b1e7e7d3a1fe939b2ac5d250debe17b26d27c178))
+
+## [2.11.1](https://github.com/anime-vsub/app/compare/v2.11.0...v2.11.1) (2026-05-28)
+
+
+### Bug Fixes
+
+* Update buffer settings in PreferencesManager ([a2dc2d4](https://github.com/anime-vsub/app/commit/a2dc2d4cc0c8d6fb39f68b83f739a7e9f209b2cf))
+
+# [2.11.0](https://github.com/anime-vsub/app/compare/v2.10.0...v2.11.0) (2026-05-27)
+
+
+### Bug Fixes
+
+* disable pointer event handling in VideoPlayer during full screen ([9253fa1](https://github.com/anime-vsub/app/commit/9253fa12d6586aa5eef3c351863e51b3ab662947))
+* LAG VIDEO. refine JS redirect detection in CloudflareManager ([c56cf09](https://github.com/anime-vsub/app/commit/c56cf09c6ea626c79233857901911ab59f164712))
+
+
+### Features
+
+* implement customizable video buffer settings and refine player gestures ([e15bef5](https://github.com/anime-vsub/app/commit/e15bef5d596bbdcd82e3e085b0d37bc9f28da874))
+* implement preferred server persistence ([fbb242c](https://github.com/anime-vsub/app/commit/fbb242c878daa7fa01aab292fbe5630b8350c2ac))
+
+# [2.10.0](https://github.com/anime-vsub/app/compare/v2.9.2...v2.10.0) (2026-05-24)
+
+
+### Bug Fixes
+
+* update dependency version (can't login) ([39244cc](https://github.com/anime-vsub/app/commit/39244cc6c2b1177fc8ebed5234894943b912f554))
+
+
+### Features
+
+* implement external platforms support in anime details ([15e52bd](https://github.com/anime-vsub/app/commit/15e52bde12d9a3570ad1829bacf7489e3bb335d7))
+* implement filtering for follows and modularize filter components ([06b97a2](https://github.com/anime-vsub/app/commit/06b97a22ffb7b9834716d0f0c05392167d1f0624))
+
+## [2.9.2](https://github.com/anime-vsub/app/compare/v2.9.1...v2.9.2) (2026-05-23)
+
+
+### Bug Fixes
+
+* can't login ([a3514cc](https://github.com/anime-vsub/app/commit/a3514cc084b8e3809dce17f5d8e8c43aae385a12))
+
+## [2.9.1](https://github.com/anime-vsub/app/compare/v2.9.0...v2.9.1) (2026-05-23)
+
+
+### Bug Fixes
+
+* remove hard code force server ([a3d762d](https://github.com/anime-vsub/app/commit/a3d762d9836d770caba8f310e80f4f98bbae08a7))
+
+# [2.9.0](https://github.com/anime-vsub/app/compare/v2.8.3...v2.9.0) (2026-05-23)
+
+
+### Bug Fixes
+
+* **cloudflare:** set current user agent ([5c2e19e](https://github.com/anime-vsub/app/commit/5c2e19e5030da5422ba4000b267dc37e8be19aa6))
+* **notification:** use index for list item keys ([5c48629](https://github.com/anime-vsub/app/commit/5c486297273752f55d2a99f20312dc24968b0176))
+
+
+### Features
+
+* add segment decryption and interceptors ([1f2355a](https://github.com/anime-vsub/app/commit/1f2355a45e61c64cdaaddfa4eda050dccd2dcfdc))
+
+## [2.8.3](https://github.com/anime-vsub/app/compare/v2.8.2...v2.8.3) (2026-05-22)
+
+
+### Bug Fixes
+
+* cloudflare infinte loop. Now support VPN and other area ([5c1dd9b](https://github.com/anime-vsub/app/commit/5c1dd9b41b92f55063c039b8634d6e8674531b93))
+
+## [2.8.2](https://github.com/anime-vsub/app/compare/v2.8.1...v2.8.2) (2026-05-21)
+
+
+### Bug Fixes
+
+* Modify Cloudflare bypass check logic ([6334a90](https://github.com/anime-vsub/app/commit/6334a908c152ab79c279d43909059db86fe57b92))
+
+## [2.8.1](https://github.com/anime-vsub/app/compare/v2.8.0...v2.8.1) (2026-05-20)
+
+
+### Bug Fixes
+
+* enhance Cloudflare challenge detection logic ([#138](https://github.com/anime-vsub/app/issues/138)) ([9260e4f](https://github.com/anime-vsub/app/commit/9260e4f5c29cc9ed31170e495db95da744908c09))
+
+# [2.8.0](https://github.com/anime-vsub/app/compare/v2.7.0...v2.8.0) (2026-05-16)
+
+
+### Bug Fixes
+
+* **comment:** align more button to right edge and add vertical padding ([77754ae](https://github.com/anime-vsub/app/commit/77754aefff75ab355834a46e6d4a1f8f5d112d26))
+* sync widget accent colors with updated theme ([f1d361b](https://github.com/anime-vsub/app/commit/f1d361bbf86648a8a50eb4edf042f1ef03f6853b))
+
+
+### Features
+
+* add FCM push notification system with System tab ([3815f10](https://github.com/anime-vsub/app/commit/3815f10f8f598b9f429e7705813bae858f9c8014))
+* add Firebase Crashlytics and Performance Monitoring ([605a327](https://github.com/anime-vsub/app/commit/605a327e1e187ad864ffaa87a4ba2dd8a94b90c7))
+* add icons to all settings screen items ([60a2b24](https://github.com/anime-vsub/app/commit/60a2b245eb00201635e06ac08647bcd0c8b975ea))
+* **player:** add swipe up gesture to enter fullscreen with scale animation ([8b81429](https://github.com/anime-vsub/app/commit/8b81429e5ffc45328bf297f9ee64a574320475df))
+
+# [2.7.0](https://github.com/anime-vsub/app/compare/v2.6.1...v2.7.0) (2026-05-13)
+
+
+### Features
+
+* **player:** implement redirect prefetch for HLS ([dcf24e4](https://github.com/anime-vsub/app/commit/dcf24e44bc997662ba7d0a9334aaf3a5c82262aa))
+
+## [2.6.1](https://github.com/anime-vsub/app/compare/v2.6.0...v2.6.1) (2026-05-11)
+
+
+### Bug Fixes
+
+* **ai-chat:** add fullscreen mode to sheet ([1d75c6b](https://github.com/anime-vsub/app/commit/1d75c6bea235be5e45a9920780a4045a0caa4aa4))
+
+# [2.6.0](https://github.com/anime-vsub/app/compare/v2.5.2...v2.6.0) (2026-05-11)
+
+
+### Bug Fixes
+
+* **ai:** improve Gemini API response handling ([4822144](https://github.com/anime-vsub/app/commit/482214487c292a4f9727c9f6b82ce992726808cf))
+
+
+### Features
+
+* **ai-provider:** add OpenAI and Claude support ([0d9f609](https://github.com/anime-vsub/app/commit/0d9f60948b81983cc93f33fd379216d1e14b91cc))
+* Implement multi-provider AI chat assistant ([cd16899](https://github.com/anime-vsub/app/commit/cd1689944ea4c9a49f408f6b9e185a2b0bd73253))
+
+## [2.5.2](https://github.com/anime-vsub/app/compare/v2.5.1...v2.5.2) (2026-05-02)
+
+
+### Bug Fixes
+
+* secure mode disable but not disable drm ([6cd6ca0](https://github.com/anime-vsub/app/commit/6cd6ca0c9d8bcd2c8f6117f0dee981acbafe3d71))
+
+## [2.5.1](https://github.com/anime-vsub/app/compare/v2.5.0...v2.5.1) (2026-05-01)
+
+
+### Bug Fixes
+
+* **security:** add option to prevent screen recording ([670204e](https://github.com/anime-vsub/app/commit/670204ee9787ea6447c7f9a55f1f983e3f5e53a5))
+
+# [2.5.0](https://github.com/anime-vsub/app/compare/v2.4.0...v2.5.0) (2026-05-01)
+
+
+### Bug Fixes
+
+* **pip:** refine picture-in-picture behavior ([d420ba4](https://github.com/anime-vsub/app/commit/d420ba4bdb10ba701875410c796354ea949c5e01))
+
+
+### Features
+
+* **ai:** Integrate Gemini AI for summaries and recaps ([c904cf9](https://github.com/anime-vsub/app/commit/c904cf986cd726ac3a577e2e21dbceb8c084a1ae))
+* **notification:** add image support and test button ([9c3499b](https://github.com/anime-vsub/app/commit/9c3499ba2ee58142cb92022dca1f396daee0fc2c))
+* **player:** improve seek bar interaction ([a876028](https://github.com/anime-vsub/app/commit/a876028dd2291297d955650b20e8b9b95996066c))
+
+# [2.4.0](https://github.com/anime-vsub/app/compare/v2.3.1...v2.4.0) (2026-04-28)
+
+
+### Bug Fixes
+
+* **player:** simplify slider drag state handling ([c836a65](https://github.com/anime-vsub/app/commit/c836a654d6b7519cc3410b6aca35f1ed5c4d68b5))
+* Remove early break in notification fetch ([bd43ab7](https://github.com/anime-vsub/app/commit/bd43ab7b6f2abd2f12e463b2073600bfe00544ca))
+
+
+### Features
+
+* **history:** allow configurable history sync interval ([499560a](https://github.com/anime-vsub/app/commit/499560aeef1feb6859439511dd4761c24909e905))
+* **icons:** add new selectable app icons ([519e385](https://github.com/anime-vsub/app/commit/519e385607e8c4d03c3ccbd1249fca6cc7aa75f4))
+* **intent:** improve deep linking and intent handling ([b21971a](https://github.com/anime-vsub/app/commit/b21971af4ad11893590ab551e3d53b47fb201e0a))
+* **launcher:** add app icon customization ([23a0518](https://github.com/anime-vsub/app/commit/23a05189a6aaf425e78c3728ddcfb5293ba4502b))
+* **pip:** add playback controls to PiP mode ([b803d2f](https://github.com/anime-vsub/app/commit/b803d2f7358e4b5bdf509014960af777ba13922b))
+* **playlist:** Implement playlist management UI and logic ([21a0e13](https://github.com/anime-vsub/app/commit/21a0e139fffd2010eefdf9bb63b1bc7ae17345d1))
+* **settings:** add dynamic color option ([beaaaeb](https://github.com/anime-vsub/app/commit/beaaaeb23b12d6f4060c576c709bd1f6bec717e4))
+* **widget:** add continue watching widget ([aaa0d58](https://github.com/anime-vsub/app/commit/aaa0d58a5e1a18ebc89bf5e5e1f17b0d5caaabf7))
+* **widget:** add History and Latest Updates widgets ([54744fc](https://github.com/anime-vsub/app/commit/54744fc245941c69d34c3e3f96380c3b24405f44))
+* **widget:** enhance empty state of Continue Watching ([4028729](https://github.com/anime-vsub/app/commit/4028729436820e38e21f9fd304beba9950a4ec88))
+
+## [2.3.1](https://github.com/anime-vsub/app/compare/v2.3.0...v2.3.1) (2026-04-26)
+
+
+### Bug Fixes
+
+* disable chrome cast crash ([9149b5b](https://github.com/anime-vsub/app/commit/9149b5b95b8dca4d027bf2d1f7d2363565168f2d))
+
+# [2.3.0](https://github.com/anime-vsub/app/compare/v2.2.1...v2.3.0) (2026-04-25)
+
+
+### Bug Fixes
+
+* **player:** consume touch when not full screen ([1905f87](https://github.com/anime-vsub/app/commit/1905f876f6965f7d0d34977025a4ab8655aceece))
+
+
+### Features
+
+* add Developer Mode and donation popup control ([2df9f28](https://github.com/anime-vsub/app/commit/2df9f287b8cf356c9e345c75695213da42f68e7b))
+* **cast:** Add Google Cast and Leanback support ([7422542](https://github.com/anime-vsub/app/commit/742254225f708cedfdb456512f454feb7b0428c7))
+* implement CommentItem component and DetailScreen UI for displaying and interacting with comments ([ce99f9e](https://github.com/anime-vsub/app/commit/ce99f9ea6db9087466209f63000f466235b3a290))
+* implement UI components and screens for the AnimeVsub application architecture ([5f66032](https://github.com/anime-vsub/app/commit/5f6603290460399b3773185444dc405affe5c93b))
+* **player:** add auto next toggle to settings ([7b10fae](https://github.com/anime-vsub/app/commit/7b10faea82af228dc57f690d90c4ab1c4a919212))
+* **player:** add pinch to zoom video gestures ([dedc5f3](https://github.com/anime-vsub/app/commit/dedc5f38a8a60f429737d154a5970a6ca682a68d))
+* **player:** enhance seek bar visibility and state ([cdb223e](https://github.com/anime-vsub/app/commit/cdb223e34482f197273808b10f656fc960434449))
+* **player:** improve auto next and skip logic ([a30bef4](https://github.com/anime-vsub/app/commit/a30bef49ce68471def7831ee45eeeb796e456946))
+* **player:** improve menu interaction and notification UI ([c2ce682](https://github.com/anime-vsub/app/commit/c2ce682fc9cb4dba50bdfca5696a0c71803c0c8f))
+* **player:** Keep screen on while playing video ([793733a](https://github.com/anime-vsub/app/commit/793733a7ec9d1421511aae4c3e194e9a11d1690c))
+* **security:** add app integrity check ([2e648fc](https://github.com/anime-vsub/app/commit/2e648fcc08a394d08970b18a39fbeb77fa6b23ec))
+* **tv:** add focus scale to UI components ([76c1ad4](https://github.com/anime-vsub/app/commit/76c1ad4f41ef8508c2ea224593a5790ff5e88cf9))
+* **ui:** add report button and dev login URL ([a8a4f6c](https://github.com/anime-vsub/app/commit/a8a4f6cab95240ee4a5e44a29ae7998154a347f3))
+* **ui:** persist viewmodel state ([1fa34e0](https://github.com/anime-vsub/app/commit/1fa34e02f08d8328b53538f78d2aa64b9db6dcc7))
+
+## [2.2.1](https://github.com/anime-vsub/app/compare/v2.2.0...v2.2.1) (2026-04-21)
+
+
+### Performance Improvements
+
+* update depends ([fb31305](https://github.com/anime-vsub/app/commit/fb3130545a7b3168dd027c70c78c4387012b43d1))
+
+# [2.2.0](https://github.com/anime-vsub/app/compare/v2.1.1...v2.2.0) (2026-04-19)
+
+
+### Bug Fixes
+
+* **ui:** improve double tap feedback by dynamic alignment in VideoPlayer ([f8c86e4](https://github.com/anime-vsub/app/commit/f8c86e4a12a10ac82892393a2ecddf5d94ece829))
+
+
+### Features
+
+* add sleep timer, break reminders, and bedtime features ([19254f3](https://github.com/anime-vsub/app/commit/19254f33d6d25b4456710ebaa27ac12ae671345a))
+* integrate compose-markdown library for enhanced update dialog ([7260d99](https://github.com/anime-vsub/app/commit/7260d99115fd2d5de9cca95c9976328acb80216b))
+* **notification:** enable navigation to latest chapter from row click ([9648d39](https://github.com/anime-vsub/app/commit/9648d39aaed6463928a4611d5ec8058c33c6b7bf))
+* **notification:** implement background sync and system notifications ([e06fd43](https://github.com/anime-vsub/app/commit/e06fd43313511a6dd6dd43e92ca5dffca1f6a51e))
+* **ui:** add animation to NavigationBar visibility ([96b4ff3](https://github.com/anime-vsub/app/commit/96b4ff3715e8b75cf9651134d94b34d084da54b8))
+* **ui:** add loading states and auto-scroll for episode selector ([c0473f7](https://github.com/anime-vsub/app/commit/c0473f75933421f1fef7e695015967dd61ef2410))
+* **ui:** implement infinte loading ([22795f9](https://github.com/anime-vsub/app/commit/22795f9d5169f6e4f8ed34cb24bad9aa30370fed))
+
+
+### Performance Improvements
+
+* **player:** optimize screen power management ([fcb5304](https://github.com/anime-vsub/app/commit/fcb530443668587ba96db46ae4f88eef37fe6c4d))
+
+## [2.1.1](https://github.com/anime-vsub/app/compare/v2.1.0...v2.1.1) (2026-04-17)
+
+
+### Bug Fixes
+
+* Update long press gesture detection logic in `VideoPlayer.kt` to check for any active touch points using `event.changes.any { it.pressed }` instead of `change.changedToUp()`. ([55aada1](https://github.com/anime-vsub/app/commit/55aada1350477116e72ef86ea769af6690c8fece))
+
+# [2.1.0](https://github.com/anime-vsub/app/compare/v2.0.5...v2.1.0) (2026-04-17)
+
+### Features
+
+* **player:** add customizable double-tap skip and long-press speed
+  control ([441c8e4](https://github.com/anime-vsub/app/commit/441c8e4d71efc5fad4e2126446dab0463a401cfa))
+
+## [2.0.5](https://github.com/anime-vsub/app/compare/v2.0.4...v2.0.5) (2026-04-14)
+
+
+### Bug Fixes
+
+* sync not need persistent ([fc72656](https://github.com/anime-vsub/app/commit/fc72656fa58419a7b1ed84bced470af56a4d75b6))
+
+## [2.0.4](https://github.com/anime-vsub/app/compare/v2.0.3...v2.0.4) (2026-04-13)
+
+
+### Bug Fixes
+
+* Based on the diffs, here is a summary of the changes: ([252bb29](https://github.com/anime-vsub/app/commit/252bb298e280047efbbe3b2159d7028a69af1960))
+
+## [2.0.3](https://github.com/anime-vsub/app/compare/v2.0.2...v2.0.3) (2026-04-13)
+
+
+### Bug Fixes
+
+* Based on the diffs, here is a summary of the changes: ([3d5037e](https://github.com/anime-vsub/app/commit/3d5037ee9aaa4aa2a7a4e22c51f89214a83d8fc2))
+
+## [2.0.2](https://github.com/anime-vsub/app/compare/v2.0.1...v2.0.2) (2026-04-13)
+
+
+### Bug Fixes
+
+* Update `.releaserc.json` to remove the `Android Aligned APK` from the release assets configuration. ([e73b41b](https://github.com/anime-vsub/app/commit/e73b41b3feebcf185db92c9871d97ec045813f97))
+
+## [2.0.1](https://github.com/anime-vsub/app/compare/v2.0.0...v2.0.1) (2026-04-13)
+
+
+### Bug Fixes
+
+* trigger release ([259c3a2](https://github.com/anime-vsub/app/commit/259c3a2a4fd0d3fc4911f2ddf365ed0a338da691))
+
+# 1.0.0 (2026-04-13)
+
+
+### Bug Fixes
+
+* accessing a new episode for the first time will say not found because the cache already exists ([8d4a63a](https://github.com/anime-vsub/app/commit/8d4a63a8d987b67624eff9b709d2e8f24e1286a6))
+* action `build-apk` failed ([5feb621](https://github.com/anime-vsub/app/commit/5feb621f0fdff9090047d73fdd57304be6aa333a))
+* action `build-apk` failure ([df0106b](https://github.com/anime-vsub/app/commit/df0106b0d284b9280696bacd64ad55694c22dcf7))
+* btn next wrong error ([e69d5c1](https://github.com/anime-vsub/app/commit/e69d5c1dc496bc7f5350621600451d4b9184da20))
+* can't set progress watch if change anime ([bc2f1b1](https://github.com/anime-vsub/app/commit/bc2f1b16d8c585f45884fc9610b0c1155ecfaff6))
+* gh action ([3a38363](https://github.com/anime-vsub/app/commit/3a383636d5d165f8bd27c844caf1a8b66894af8a))
+* lint ([bd0993e](https://github.com/anime-vsub/app/commit/bd0993ee0ee38a288a9dbc7b17ff83c541db982d))
+* lint vue ([a11855b](https://github.com/anime-vsub/app/commit/a11855b9db684c4c088ae99476662fc0804e84a6))
+* localize lost ([5ce4235](https://github.com/anime-vsub/app/commit/5ce42358bba43f121b163faf96a6f2d9cb9b5029))
+* offset point in player, two call fetch opend ([4a0041e](https://github.com/anime-vsub/app/commit/4a0041ef680187a0d8fc85d6995aad3212dfdc5d))
+* package.json to reduce vulnerabilities ([#102](https://github.com/anime-vsub/app/issues/102)) ([09f08ee](https://github.com/anime-vsub/app/commit/09f08ee0091a7f82c445f33f933a7fc307d0e2ec))
+* package.json to reduce vulnerabilities ([#120](https://github.com/anime-vsub/app/issues/120)) ([7331b57](https://github.com/anime-vsub/app/commit/7331b57ad76b0ef79c301ba8efd5f677219bac45))
+* package.json to reduce vulnerabilities ([#130](https://github.com/anime-vsub/app/issues/130)) ([fea659f](https://github.com/anime-vsub/app/commit/fea659fd589338bd5db0ccf9afe93bbb3cdb0329))
+* parsing json ([be68d1e](https://github.com/anime-vsub/app/commit/be68d1e8b40ca2e0d71fc61f193c322f2b3d5f37))
+* path not exists on artifact ([12e0a0d](https://github.com/anime-vsub/app/commit/12e0a0db4040303b9a48d6e073b05c3ce3ffa1e5))
+* progress not show ([3557298](https://github.com/anime-vsub/app/commit/3557298651171c37293b4d94dffa50d6faad0d83))
+* release not file output ([8448eef](https://github.com/anime-vsub/app/commit/8448eef72a15d37fece4476a1a8e43a14d038568))
+* request realtime data play list not used ([26c8bc8](https://github.com/anime-vsub/app/commit/26c8bc8fe2666f93d4d254c81c79b7d420c4c1db))
+* src-capacitor/package.json to reduce vulnerabilities ([#122](https://github.com/anime-vsub/app/issues/122)) ([1261661](https://github.com/anime-vsub/app/commit/12616615b8fdaf39b777d343f9a5082c0f7bd833))
+* typing ([7b9e3d5](https://github.com/anime-vsub/app/commit/7b9e3d56b8662ddb59a2f32d48393e0ccc17c16a))
+* upgrade @firebase/app from 0.10.18 to 0.11.0 ([#112](https://github.com/anime-vsub/app/issues/112)) ([3ee98bd](https://github.com/anime-vsub/app/commit/3ee98bdf4a539d9b890196a00ade3519b9ea45b5))
+* upgrade @firebase/app from 0.11.5 to 0.14.6 ([#118](https://github.com/anime-vsub/app/issues/118)) ([c08a765](https://github.com/anime-vsub/app/commit/c08a765c3cfda55a52a82b9f1e3e825a5dedc3d7))
+* upgrade @firebase/app from 0.9.29 to 0.10.6 ([#105](https://github.com/anime-vsub/app/issues/105)) ([39ac971](https://github.com/anime-vsub/app/commit/39ac97110d72025f412755145cdc317c0e2cc2db))
+* upgrade cheerio from 1.0.0 to 1.1.2 ([#119](https://github.com/anime-vsub/app/issues/119)) ([447bdc0](https://github.com/anime-vsub/app/commit/447bdc00e652e73d412585b779cf82d34b930394))
+* upgrade cheerio from 1.0.0-rc.12 to 1.0.0 ([#110](https://github.com/anime-vsub/app/issues/110)) ([22430f2](https://github.com/anime-vsub/app/commit/22430f26c78f43970a9583dd35f76286407765e1))
+* upgrade hls.js from 1.5.9 to 1.5.13 ([#107](https://github.com/anime-vsub/app/issues/107)) ([5223cf3](https://github.com/anime-vsub/app/commit/5223cf3d6052d7b57bc14f080d682a19841a3933))
+* upgrade hls.js from 1.5.9 to 1.5.13 ([#108](https://github.com/anime-vsub/app/issues/108)) ([1d99d55](https://github.com/anime-vsub/app/commit/1d99d550bcec5ae95ef285f4ded1b6e99a9ecbfd))
+* upgrade vue-request from 2.0.0-rc.4 to 2.0.4 ([#106](https://github.com/anime-vsub/app/issues/106)) ([a3dce63](https://github.com/anime-vsub/app/commit/a3dce63392a29c630e5b2ed583c71b400d7061e1))
+* use `pnpm@8` in `ci` ([bc706ea](https://github.com/anime-vsub/app/commit/bc706eaba6a8917d64522a3a59105d15b397c69c))
+* wrong port comment native from `desktop-web` ([4dbe3aa](https://github.com/anime-vsub/app/commit/4dbe3aa8d2f4c6921fa62bd422d7893e286740cb))
+
+
+### Features
+
+* add auto skip `opening` and `ending` ([66520a6](https://github.com/anime-vsub/app/commit/66520a6e5f86b2146b3aa613e09b877d7f14f0ec))
+* add episode search and bottom sheet navigation ([40993db](https://github.com/anime-vsub/app/commit/40993db8e2280c44003361b773951d25604d8b05))
+* add fullscreen support and orientation handling to VideoPlayer ([be32800](https://github.com/anime-vsub/app/commit/be328009598fb626bbf8ad2aaa497f637a9e5323))
+* add gesture controls and auto-skip functionality to VideoPlayer ([fa88ff8](https://github.com/anime-vsub/app/commit/fa88ff8dfed87a1b3d62cbcb6ddc6c07c528f2bb))
+* add localization for session expiration and Cloudflare bypass ([0cbd51e](https://github.com/anime-vsub/app/commit/0cbd51efcb76c3ea9ce47d93fa9e2e2cc87150bb))
+* enable eruda in dev mode ([9561d5d](https://github.com/anime-vsub/app/commit/9561d5de272ed4889d54c9e3fda271887403d1f6))
+* enhance Account screen with watch history, followed anime, and expanded settings ([9890506](https://github.com/anime-vsub/app/commit/9890506f0d1289b0d19d8961e86af26733232550))
+* enhance metadata navigation and refine category filtering across screens ([256a492](https://github.com/anime-vsub/app/commit/256a4924f0d8a13fd7207d65e3bf8f3d3408548f))
+* enhance Notifications with pull-to-refresh, swipe-to-dismiss, and improved UI ([116cde6](https://github.com/anime-vsub/app/commit/116cde6cdc30e90631e7c6fa67ff099924162c2d))
+* enhance playlist management with add/remove toggles and checked state tracking ([0275d07](https://github.com/anime-vsub/app/commit/0275d07d81bb782956fb48e84ccebb9743748cc5))
+* enhance schedule screen with improved date parsing and grouping ([5af6b36](https://github.com/anime-vsub/app/commit/5af6b36d017bd8abf51b1ad395676005e0740183))
+* enhance studio metadata and navigation in Detail screen ([a3f1735](https://github.com/anime-vsub/app/commit/a3f173515875a462864b251508224efa6520f3dc))
+* enhance VideoPlayer with playback speed control and auto-next functionality ([2617283](https://github.com/anime-vsub/app/commit/26172833cae841bd627973d38ee18b0e4932e959))
+* **error controller:** :zap: add control fix `click:rery` and search type error ([c8a480f](https://github.com/anime-vsub/app/commit/c8a480ffa9c29172fe959f12130112100f0b898b))
+* fix category not found ([1473b9e](https://github.com/anime-vsub/app/commit/1473b9ee88522cae2a5944ccba5b4438af1f6f50))
+* fix firestore realtime not reactive ([c1e5a66](https://github.com/anime-vsub/app/commit/c1e5a664918ad9b295180e935181fd91655b3378))
+* fix ui `ScreenError` ([26f2e78](https://github.com/anime-vsub/app/commit/26f2e78ccc5d6037c5645868af357e18e1ed9ee8))
+* implement advanced filtering and grid view in Category screen ([2e3dd1d](https://github.com/anime-vsub/app/commit/2e3dd1d128b10a94ad5c6a1496d597001aae5267))
+* implement automated skip range detection for intro and outro ([af3f77f](https://github.com/anime-vsub/app/commit/af3f77fa2e5ff1db64f112269eb9078fffc05d09))
+* implement comment system in Detail screen ([127efbc](https://github.com/anime-vsub/app/commit/127efbcdd69d17f16d4a6bce3ca3c85fc73e6b2e))
+* implement comprehensive playlist management and navigation ([4005633](https://github.com/anime-vsub/app/commit/40056330014309dadf3d9a3a284cc28795902278))
+* implement follow/unfollow functionality and movie sharing ([2b79d2f](https://github.com/anime-vsub/app/commit/2b79d2f230195f097a771d1ac8241e627f414509))
+* implement full search functionality and pagination in Search screen ([9b6091c](https://github.com/anime-vsub/app/commit/9b6091c8d94d531d03fff91a3d9e36b205265b10))
+* implement History screen and UI refinements for Account and History components ([8d802e1](https://github.com/anime-vsub/app/commit/8d802e15e00d2f65b843c85f3fc737fbb2b551e4))
+* implement in-app update checking and notification system ([45362b4](https://github.com/anime-vsub/app/commit/45362b445ab4e1668a776094c582eebdb288ad5e))
+* implement in-app update system via GitHub Releases ([c30d28a](https://github.com/anime-vsub/app/commit/c30d28abb12334ecdf2e6c88165d41e923db29e7))
+* implement notification caching, unread badges, and shimmer loading ([a1ef7e1](https://github.com/anime-vsub/app/commit/a1ef7e1eeda630c2087a40f96c455e7f8e26439b))
+* implement pager-based rankings with dynamic categories ([a5455be](https://github.com/anime-vsub/app/commit/a5455bef9025010101327f57e9d2d9e5c8790891))
+* implement player side menus for episode and server selection ([c065c71](https://github.com/anime-vsub/app/commit/c065c71a32cc632d95a07b52277f0ea48dbea072))
+* implement pull-to-refresh across major screens and update Compose BOM ([03116aa](https://github.com/anime-vsub/app/commit/03116aa4b76c5d3050ef0a611240998920d1647a))
+* implement Settings screen and refactor Account UI ([48524cc](https://github.com/anime-vsub/app/commit/48524ccd1381e960e82f9e08e7ad55c6a0b316f2))
+* implement unified settings menu and support options in VideoPlayer ([f7d9a70](https://github.com/anime-vsub/app/commit/f7d9a7032263877e051920dd90398b1865f37c9c))
+* implement video quality selection and refine DetailScreen types ([d25a832](https://github.com/anime-vsub/app/commit/d25a83225339c05ceca0eeef6d8666aa78e30dbb))
+* implement watch history and progress syncing via Supabase ([59838d0](https://github.com/anime-vsub/app/commit/59838d0e663c766869fc84a3406f3f4f189a102a))
+* improve Playlist Detail UI and episode label formatting ([e8be077](https://github.com/anime-vsub/app/commit/e8be077590243e83a79f6009e6ff576302efb984))
+* integrate Firebase Analytics for user activity tracking ([ba046d9](https://github.com/anime-vsub/app/commit/ba046d9fb6179dac045a8cf2faf30da9ec9afb83))
+* not save history view if <5s ([d0f56ed](https://github.com/anime-vsub/app/commit/d0f56edf68a0f5ca0460ae12fea6c1a4d12bee69))
+* not show content require login in anony `/tai-khoan` ([f5e392d](https://github.com/anime-vsub/app/commit/f5e392d99d9d14216523c091ccb752d58cdf60d0))
+* refactor anime models and implement horizontal paging in Schedule screen ([72c1746](https://github.com/anime-vsub/app/commit/72c1746b4660b23b29fc5518a3a2adb23b3969d2))
+* refactor category navigation to use a flexible filter-based system ([783a712](https://github.com/anime-vsub/app/commit/783a7126089c238f187394245a34f4d8d55251c4))
+* refactor UI components and improve anime data parsing ([6ae48f9](https://github.com/anime-vsub/app/commit/6ae48f9ccb47754a2ca09e190afd5f1bbf509480))
+* Rewrite app using Kotlin Jetpack Compose ([f47e075](https://github.com/anime-vsub/app/commit/f47e07553e34fd6023b1aa72d35cc394760e3581))
+* secure Supabase configuration using BuildConfig and local.properties ([aea3eec](https://github.com/anime-vsub/app/commit/aea3eecbabc01e7b760168599c01bbe4c83221fe))
+* size image poster in menu info `/phim/_season` ([b9081cf](https://github.com/anime-vsub/app/commit/b9081cf5a241175a4b7b79349f95cb095f70d1d5))
+* support comment native in native ([a0fcb26](https://github.com/anime-vsub/app/commit/a0fcb26993037a3fcfb9e3808bff72f41aa99753))
+* upgrade dependencies and enhance video player with server selection and skip ranges ([09a06d0](https://github.com/anime-vsub/app/commit/09a06d0f5d0e6f69656bab760dbc05c6ad375f58))
+* use `unplugin-auto-import` and `unplugin-vue-components` ([8b9d78f](https://github.com/anime-vsub/app/commit/8b9d78f98cd98a3901b1a1d3382a1d305fd44f3e))
+* wrong ep restore ([a12da4d](https://github.com/anime-vsub/app/commit/a12da4dbd3b181b542f5a43c5fb9cc93f22b8a0a))

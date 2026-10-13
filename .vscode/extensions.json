@@ -1,0 +1,18 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "editorconfig.editorconfig",
+    "vue.volar",
+    "wayou.vscode-todo-highlight",
+    "lokalise.i18n-ally",
+    "redhat.java",
+    "oracle.oracle-java"
+  ],
+  "unwantedRecommendations": [
+    "octref.vetur",
+    "hookyqr.beautify",
+    "dbaeumer.jshint",
+    "ms-vscode.vscode-typescript-tslint-plugin"
+  ]
+}

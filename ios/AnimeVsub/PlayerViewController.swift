@@ -20,7 +20,7 @@ final class PlayerViewController: AVPlayerViewController {
             case .success(let data):
                 guard let url = URL(string: data.link) else { return }
                 let asset = AVURLAsset(url: url, options: [
-                    AVURLAssetHTTPHeaderFieldsKey: data.headers ?? [
+                    "AVURLAssetHTTPHeaderFieldsKey": data.headers ?? [
                         "Referer": APIClient.shared.baseURL.absoluteString,
                         "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 12_5 like Mac OS X) AppleWebKit/605.1.15 Mobile Safari/604.1"
                     ]

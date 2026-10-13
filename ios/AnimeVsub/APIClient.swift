@@ -324,7 +324,7 @@ private enum HTMLParser {
     static func player(from response: String) -> Result<PlayerData, APIError> {
         if let data = response.data(using: .utf8),
            let object = try? JSONSerialization.jsonObject(with: data) {
-            if let result = player(from: object) {
+            if let result = parsePlayerObject(object) {
                 return .success(result)
             }
         }
@@ -349,7 +349,7 @@ private enum HTMLParser {
         return .failure(.unsupportedResponse)
     }
 
-    private static func player(from object: Any) -> PlayerData? {
+    private static func parsePlayerObject(_ object: Any) -> PlayerData? {
         guard let dictionary = object as? [String: Any] else { return nil }
         if let link = dictionary["link"] {
             if let links = link as? [[String: Any]],
@@ -360,28 +360,28 @@ private enum HTMLParser {
             if let file = link as? String {
                 if let nestedData = file.data(using: .utf8),
                    let nested = try? JSONSerialization.jsonObject(with: nestedData),
-                   let result = player(from: nested) {
+                   let result = parsePlayerObject(nested) {
                     return result
                 }
                 return playerData(file: file, type: dictionary["type"] as? String)
             }
         }
         if let html = dictionary["html"] as? String {
-            if case .success(let result) = player(from: html) {
+            if case .success(let result) = parsePlayerJSON(html) {
                 return result
             }
             return nil
         }
         if let data = dictionary["data"] {
-            return player(from: data)
+            return parsePlayerObject(data)
         }
         return nil
     }
 
-    private static func player(from value: String) -> Result<PlayerData, APIError> {
+    private static func parsePlayerJSON(_ value: String) -> Result<PlayerData, APIError> {
         guard let data = value.data(using: .utf8),
               let object = try? JSONSerialization.jsonObject(with: data),
-              let result = player(from: object) else {
+              let result = parsePlayerObject(object) else {
             return .failure(.unsupportedResponse)
         }
         return .success(result)

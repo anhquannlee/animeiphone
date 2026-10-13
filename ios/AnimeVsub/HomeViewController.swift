@@ -113,7 +113,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             let bootstrap = SiteBootstrapViewController(url: APIClient.shared.baseURL) { [weak self] _ in
                 self?.dismiss(animated: true) { self?.load() }
             }
-            self?.present(UINavigationController(rootViewController: bootstrap), animated: true)
+            self.present(UINavigationController(rootViewController: bootstrap), animated: true)
         })
         alert.addAction(UIAlertAction(title: "Hủy", style: .cancel))
         present(alert, animated: true)

@@ -9,6 +9,18 @@ final class SearchViewController: HomeViewController, UISearchBarDelegate {
         searchBar.placeholder = "Tên anime"
         searchBar.delegate = self
         searchBar.searchBarStyle = .minimal
+        searchBar.tintColor = .white
+        searchBar.barTintColor = UIColor(white: 0.12, alpha: 1)
+        searchBar.backgroundColor = UIColor(white: 0.12, alpha: 1)
+        if let textField = searchBar.value(forKey: "searchField") as? UITextField {
+            textField.textColor = .white
+            textField.tintColor = .white
+            textField.backgroundColor = UIColor(white: 0.18, alpha: 1)
+            textField.attributedPlaceholder = NSAttributedString(
+                string: "Tên anime",
+                attributes: [.foregroundColor: UIColor(white: 0.72, alpha: 1)]
+            )
+        }
         navigationItem.titleView = searchBar
     }
 

@@ -4,6 +4,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     var items = [AnimeCard]()
     let collectionView: UICollectionView
     private let refresh = UIRefreshControl()
+    private let emptyLabel = UILabel()
 
     init() {
         let layout = UICollectionViewFlowLayout()
@@ -18,8 +19,14 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "AnimeVsub"
-        view.backgroundColor = .black
-        collectionView.backgroundColor = .black
+        view.backgroundColor = UIColor(white: 0.07, alpha: 1)
+        collectionView.backgroundColor = UIColor(white: 0.07, alpha: 1)
+        emptyLabel.text = "Đang tải dữ liệu…"
+        emptyLabel.textColor = UIColor(white: 0.78, alpha: 1)
+        emptyLabel.font = UIFont.systemFont(ofSize: 15)
+        emptyLabel.textAlignment = .center
+        emptyLabel.numberOfLines = 0
+        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.alwaysBounceVertical = true
@@ -28,11 +35,16 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         refresh.addTarget(self, action: #selector(load), for: .valueChanged)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
+        view.addSubview(emptyLabel)
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            emptyLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            emptyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            emptyLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24)
         ])
         load()
     }
@@ -45,7 +57,11 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             case .success(let data):
                 self.items = data.lastUpdate + data.thisSeason + data.hotUpdate
                 self.collectionView.reloadData()
+                self.emptyLabel.isHidden = !self.items.isEmpty
+                self.emptyLabel.text = "Chưa có anime để hiển thị."
             case .failure(let error):
+                self.emptyLabel.isHidden = false
+                self.emptyLabel.text = "Không tải được dữ liệu.\nKéo xuống để thử lại."
                 self.presentError(error)
             }
         }
@@ -54,6 +70,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     func display(items: [AnimeCard]) {
         self.items = items
         collectionView.reloadData()
+        emptyLabel.isHidden = !items.isEmpty
+        emptyLabel.text = "Không tìm thấy anime."
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { items.count }

@@ -4,7 +4,7 @@ import AVFoundation
 struct DownloadRecord: Codable {
     let id: String
     let title: String
-    let sourceURL: String
+    var sourceURL: String
     let collectionID: String?
     let collectionTitle: String?
     let image: String?
@@ -127,7 +127,7 @@ final class DownloadManager: NSObject, AVAssetDownloadDelegate {
                 guard error == nil, let data = data,
                       let manifest = String(data: data, encoding: .utf8),
                       manifest.contains("#EXTM3U") else {
-                    let contentType = (response as? HTTPURLResponse)?.value(forHTTPHeaderField: "Content-Type") ?? ""
+                    let contentType = ((response as? HTTPURLResponse)?.allHeaderFields["Content-Type"] as? String) ?? ""
                     if contentType.lowercased().contains("video/") {
                         self.startAssetDownload(title: title, id: id, asset: asset)
                     } else {
@@ -214,12 +214,13 @@ final class DownloadManager: NSObject, AVAssetDownloadDelegate {
         request.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 12_5 like Mac OS X) AppleWebKit/605.1.15 Mobile Safari/604.1", forHTTPHeaderField: "User-Agent")
         directTasks[id] = directSession.dataTask(with: request) { [weak self] data, _, error in
             DispatchQueue.main.async {
-                guard let self = self, let data = data,
+                guard let self = self else { return }
+                guard let data = data,
                       let manifest = String(data: data, encoding: .utf8) else {
-                    self?.setError(id: id, message: error?.localizedDescription ?? "không đọc được playlist")
+                    self.setError(id: id, message: error?.localizedDescription ?? "không đọc được playlist")
                     return
                 }
-                self?.startDirectHLS(title: title, id: id, url: url, manifest: manifest, index: index)
+                self.startDirectHLS(title: title, id: id, url: url, manifest: manifest, index: index)
             }
         }
         directTasks[id]?.resume()

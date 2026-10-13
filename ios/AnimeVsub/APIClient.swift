@@ -91,6 +91,17 @@ final class APIClient {
                     : .success(pageData)
             })
         }
+
+    }
+
+    func episodes(animeID: String, completion: @escaping (Result<[ChapterInfo], APIError>) -> Void) {
+        let path = "/phim/\(HTMLParser.slug(animeID))/xem-phim.html"
+        requestHTML(path: path, method: "GET", parameters: [:]) { result in
+            completion(result.flatMap {
+                let chapters = HTMLParser.episodes(from: $0)
+                return chapters.isEmpty ? .failure(.unsupportedResponse) : .success(chapters)
+            })
+        }
     }
 
     func suggestions(keyword: String, completion: @escaping (Result<[SearchSuggestion], APIError>) -> Void) {
@@ -278,6 +289,20 @@ private enum HTMLParser {
 
     static func suggestions(from html: String) -> [SearchSuggestion] {
         cards(from: html).map { SearchSuggestion(id: $0.animeId, name: $0.name, image: $0.image) }
+    }
+
+    static func episodes(from html: String) -> [ChapterInfo] {
+        let pattern = #"<a[^>]+(?:data-id|data-play)=["']([^"']+)["'][^>]*>([^<]+)</a>"#
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else { return [] }
+        let range = NSRange(html.startIndex..<html.endIndex, in: html)
+        return regex.matches(in: html, range: range).compactMap { match in
+            guard let idRange = Range(match.range(at: 1), in: html),
+                  let nameRange = Range(match.range(at: 2), in: html) else { return nil }
+            let id = String(html[idRange])
+            let name = text(in: String(html[nameRange])).trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !id.isEmpty, !name.isEmpty else { return nil }
+            return ChapterInfo(id: id, name: name, extra: nil)
+        }
     }
 
     static func player(from response: String) -> Result<PlayerData, APIError> {

@@ -113,7 +113,7 @@ final class DetailViewController: UIViewController, UITableViewDataSource, UITab
     @objc private func downloadAll() {
         guard !episodes.isEmpty else { return }
         DownloadManager.shared.downloadAll(title: anime.name, collectionID: anime.animeId,
-                                            chapters: episodes)
+                                            image: anime.image, chapters: episodes)
         let alert = UIAlertController(title: "Đã xếp hàng tải cả bộ",
                                       message: "\(episodes.count) tập sẽ được lấy link và tải lần lượt. Xem tiến trình trong tab Đã tải.",
                                       preferredStyle: .alert)

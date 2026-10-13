@@ -2,11 +2,11 @@ import UIKit
 import AVKit
 
 final class PlayerViewController: AVPlayerViewController {
-    private let chapterID: String
+    private let chapter: ChapterInfo
     private let episodeTitle: String
 
-    init(chapterID: String, title: String) {
-        self.chapterID = chapterID
+    init(chapter: ChapterInfo, title: String) {
+        self.chapter = chapter
         self.episodeTitle = title
         super.init(nibName: nil, bundle: nil)
     }
@@ -15,7 +15,7 @@ final class PlayerViewController: AVPlayerViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        APIClient.shared.player(episodeID: chapterID) { [weak self] result in
+        APIClient.shared.player(chapter: chapter) { [weak self] result in
             switch result {
             case .success(let data):
                 guard let url = URL(string: data.link) else { return }

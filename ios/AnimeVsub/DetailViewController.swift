@@ -68,7 +68,7 @@ final class DetailViewController: UIViewController, UITableViewDataSource, UITab
 
     @objc private func play() {
         guard let episode = episodes.last ?? anime.lastEpisode else { return }
-        navigationController?.pushViewController(PlayerViewController(chapterID: episode.id, title: anime.name), animated: true)
+        navigationController?.pushViewController(PlayerViewController(chapter: episode, title: anime.name), animated: true)
     }
 
     private func loadEpisodes() {
@@ -103,7 +103,7 @@ final class DetailViewController: UIViewController, UITableViewDataSource, UITab
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let episode = episodes[indexPath.row]
         navigationController?.pushViewController(
-            PlayerViewController(chapterID: episode.id, title: "\(anime.name) - \(episode.name)"),
+            PlayerViewController(chapter: episode, title: "\(anime.name) - \(episode.name)"),
             animated: true
         )
         tableView.deselectRow(at: indexPath, animated: true)

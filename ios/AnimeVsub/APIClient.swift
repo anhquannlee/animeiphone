@@ -124,11 +124,20 @@ final class APIClient {
         }
     }
 
-    func player(episodeID: String, completion: @escaping (Result<PlayerData, APIError>) -> Void) {
+    func player(chapter: ChapterInfo, completion: @escaping (Result<PlayerData, APIError>) -> Void) {
+        var parameters = [
+            "id": chapter.id,
+            "play": chapter.extra?["play"] ?? "",
+            "link": chapter.extra?["hash"] ?? "",
+            "backuplinks": "1"
+        ]
+        if parameters["play"]?.isEmpty == true {
+            parameters["episodeId"] = chapter.id
+        }
         requestHTML(
-            path: "/ajax/player?v=2019a",
+            path: "/ajax/player",
             method: "POST",
-            parameters: ["episodeId": episodeID, "backup": "1"]
+            parameters: parameters
         ) { result in
             completion(result.flatMap { HTMLParser.player(from: $0) })
         }
@@ -261,7 +270,10 @@ private enum HTMLParser {
             guard let match = match, let hrefRange = Range(match.range(at: 1), in: html) else { return }
             let href = String(html[hrefRange])
             guard href.contains("/phim/") || href.contains("/xem-phim/") else { return }
-            let id = href.split(separator: "/").last.map(String.init) ?? href
+            let pathParts = href.split(separator: "/").map(String.init)
+            guard let markerIndex = pathParts.firstIndex(where: { $0 == "phim" || $0 == "xem-phim" }),
+                  markerIndex + 1 < pathParts.count else { return }
+            let id = pathParts[markerIndex + 1]
             guard !seen.contains(id) else { return }
             let region = String(html[Range(match.range, in: html)!])
             let image = attribute("data-src", in: region)
@@ -292,24 +304,40 @@ private enum HTMLParser {
     }
 
     static func episodes(from html: String) -> [ChapterInfo] {
-        let pattern = #"<a[^>]+(?:data-id|data-play)=["']([^"']+)["'][^>]*>([^<]+)</a>"#
+        let pattern = #"<a[^>]+(?:data-id|data-play)=["'][^"']+["'][^>]*>[\s\S]*?</a>"#
         guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else { return [] }
         let range = NSRange(html.startIndex..<html.endIndex, in: html)
         return regex.matches(in: html, range: range).compactMap { match in
-            guard let idRange = Range(match.range(at: 1), in: html),
-                  let nameRange = Range(match.range(at: 2), in: html) else { return nil }
-            let id = String(html[idRange])
-            let name = text(in: String(html[nameRange])).trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !id.isEmpty, !name.isEmpty else { return nil }
-            return ChapterInfo(id: id, name: name, extra: nil)
+            guard let itemRange = Range(match.range, in: html) else { return nil }
+            let item = String(html[itemRange])
+            guard let id = attribute("data-id", in: item),
+                  let name = firstCapture(#">([^<]+)</a>"#, in: item)?
+                    .trimmingCharacters(in: .whitespacesAndNewlines),
+                  !id.isEmpty, !name.isEmpty else { return nil }
+            var extra = [String: String]()
+            if let play = attribute("data-play", in: item) { extra["play"] = play }
+            if let hash = attribute("data-hash", in: item) { extra["hash"] = hash }
+            return ChapterInfo(id: id, name: text(in: name), extra: extra)
         }
     }
 
     static func player(from response: String) -> Result<PlayerData, APIError> {
         if let data = response.data(using: .utf8),
            let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-           let json = object["html"] as? String {
-            return player(from: json)
+           let link = object["link"] {
+            if let links = link as? [[String: Any]],
+               let first = links.first,
+               let file = first["file"] as? String {
+                return .success(PlayerData(
+                    link: file.hasPrefix("http") ? file : "https:\(file)",
+                    type: first["type"] as? String ?? "hls",
+                    headers: nil,
+                    isContent: false
+                ))
+            }
+            if let file = link as? String, file.hasPrefix("http") {
+                return .success(PlayerData(link: file, type: "hls", headers: nil, isContent: false))
+            }
         }
         let candidates = [
             #"https?://[^"' ]+\.m3u8[^"' ]*"#,

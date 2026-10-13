@@ -40,6 +40,11 @@ jobs:
             -derivedDataPath build/DerivedData \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO
+          APP_PATH="build/DerivedData/Build/Products/Release-iphoneos/AnimeVsub.app"
+          test -x "$APP_PATH/AnimeVsub"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :CFBundlePackageType" "$APP_PATH/Info.plist"
 
       - name: Package unsigned IPA
         run: |

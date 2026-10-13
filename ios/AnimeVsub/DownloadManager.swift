@@ -53,13 +53,19 @@ final class DownloadManager: NSObject, AVAssetDownloadDelegate {
                 "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 12_5 like Mac OS X) AppleWebKit/605.1.15 Mobile Safari/604.1"
             ]
         ])
-        let task = session.makeAssetDownloadTask(asset: asset,
-                                                  assetTitle: title,
-                                                  assetArtworkData: nil,
-                                                  options: nil)
         records.removeAll { $0.id == id }
         records.append(DownloadRecord(id: id, title: title, sourceURL: url.absoluteString,
-                                      localURL: nil, progress: 0, state: "downloading"))
+                                      localURL: nil, progress: 0, state: "starting"))
+        guard let task = session.makeAssetDownloadTask(asset: asset,
+                                                       assetTitle: title,
+                                                       assetArtworkData: nil,
+                                                       options: nil) else {
+            records[records.count - 1].state = "error: không tạo được tác vụ tải"
+            save()
+            notify()
+            return
+        }
+        records[records.count - 1].state = "downloading"
         tasks[task] = id
         save()
         task.resume()

@@ -24,7 +24,10 @@ jobs:
         run: brew install xcodegen
 
       - name: Generate Xcode project
-        run: xcodegen generate --spec ios/project.yml
+        run: |
+          xcodegen generate --spec ios/project.yml
+          # XcodeGen 2.46 emits objectVersion 77, which Xcode 15.4 cannot read.
+          sed -i '' 's/objectVersion = 77;/objectVersion = 60;/' ios/AnimeVsub.xcodeproj/project.pbxproj
 
       - name: Build unsigned app
         run: |

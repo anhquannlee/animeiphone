@@ -82,9 +82,14 @@ final class APIClient {
     }
 
     func search(keyword: String, page: Int = 1, completion: @escaping (Result<CategoryPage, APIError>) -> Void) {
-        let path = "/tim-kiem/\(HTMLParser.slug(keyword))"
-        requestHTML(path: path, method: "GET", parameters: page > 1 ? ["page": String(page)] : [:]) { result in
-            completion(result.flatMap { .success(HTMLParser.category(from: $0, page: page)) })
+        let path = "/tim-kiem/\(HTMLParser.slug(keyword))/trang-\(page).html"
+        requestHTML(path: path, method: "GET", parameters: [:]) { result in
+            completion(result.flatMap {
+                let pageData = HTMLParser.category(from: $0, page: page)
+                return pageData.items.isEmpty
+                    ? .failure(.unsupportedResponse)
+                    : .success(pageData)
+            })
         }
     }
 

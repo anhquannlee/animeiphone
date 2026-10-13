@@ -116,7 +116,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
 
     private func requestSiteURL() {
-        let alert = UIAlertController(title: "Nhập link website", message: "Ví dụ: animevietsub.pl", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Nhập link website", message: "Ví dụ: animevietsub.xyz", preferredStyle: .alert)
         alert.addTextField { field in
             field.text = APIClient.shared.baseURL.absoluteString
             field.keyboardType = .URL

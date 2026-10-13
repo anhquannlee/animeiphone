@@ -35,16 +35,28 @@ struct SearchSuggestion {
 final class APIClient {
     static let shared = APIClient()
 
-    /// The canonical domain used by the AnimeVsub desktop application.
-    var baseURL = URL(string: "https://animevietsub.pl")!
+    private static let savedBaseURLKey = "AnimeVsub.savedBaseURL"
+    private static let defaultBaseURL = URL(string: "https://animevietsub.xyz")!
+
+    /// Uses the saved domain first; a fresh install starts with animevietsub.xyz.
+    private(set) var baseURL: URL
     private let fallbackBaseURLs = [
+        URL(string: "https://animevietsub.xyz")!,
         URL(string: "https://animevietsub.pl")!,
         URL(string: "https://animevietsub.pro")!,
         URL(string: "https://animevietsub.tv")!,
-        URL(string: "https://animevietsub.xyz")!,
         URL(string: "https://animevietsub.link")!,
         URL(string: "https://animevietsub.nl")!
     ]
+
+    private init() {
+        if let saved = UserDefaults.standard.string(forKey: APIClient.savedBaseURLKey),
+           let url = URL(string: saved) {
+            baseURL = url
+        } else {
+            baseURL = APIClient.defaultBaseURL
+        }
+    }
 
     func setBaseURL(_ value: String) -> Bool {
         var raw = value.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -58,6 +70,7 @@ final class APIClient {
         components.port = url.port
         guard let origin = components.url else { return false }
         baseURL = origin
+        UserDefaults.standard.set(origin.absoluteString, forKey: APIClient.savedBaseURLKey)
         return true
     }
     var session: URLSession = {
@@ -200,11 +213,21 @@ final class APIClient {
 
         session.dataTask(with: request) { data, response, error in
             if let error = error {
-                DispatchQueue.main.async { completion(.failure(.transport(error))) }
+                if index + 1 < baseURLs.count {
+                    self.requestRaw(path: path, method: method, parameters: parameters,
+                                    baseURLs: baseURLs, index: index + 1, completion: completion)
+                } else {
+                    DispatchQueue.main.async { completion(.failure(.transport(error))) }
+                }
                 return
             }
             guard let http = response as? HTTPURLResponse else {
-                DispatchQueue.main.async { completion(.failure(.invalidResponse)) }
+                if index + 1 < baseURLs.count {
+                    self.requestRaw(path: path, method: method, parameters: parameters,
+                                    baseURLs: baseURLs, index: index + 1, completion: completion)
+                } else {
+                    DispatchQueue.main.async { completion(.failure(.invalidResponse)) }
+                }
                 return
             }
             guard (200..<300).contains(http.statusCode) else {
@@ -219,8 +242,37 @@ final class APIClient {
                 return
             }
             guard let data = data, !data.isEmpty else {
-                DispatchQueue.main.async { completion(.failure(.emptyResponse)) }
+                if index + 1 < baseURLs.count {
+                    self.requestRaw(path: path, method: method, parameters: parameters,
+                                    baseURLs: baseURLs, index: index + 1, completion: completion)
+                } else {
+                    DispatchQueue.main.async { completion(.failure(.emptyResponse)) }
+                }
                 return
+            }
+            if let body = String(data: data, encoding: .utf8),
+               body.range(of: "Just a moment", options: .caseInsensitive) != nil
+                   || body.range(of: "cf-chl-", options: .caseInsensitive) != nil {
+                if index + 1 < baseURLs.count {
+                    self.requestRaw(path: path, method: method, parameters: parameters,
+                                    baseURLs: baseURLs, index: index + 1, completion: completion)
+                } else {
+                    DispatchQueue.main.async { completion(.failure(.unsupportedResponse)) }
+                }
+                return
+            }
+            if let responseURL = http.url,
+               let scheme = responseURL.scheme,
+               let host = responseURL.host,
+               scheme == "http" || scheme == "https" {
+                var components = URLComponents()
+                components.scheme = scheme
+                components.host = host
+                components.port = responseURL.port
+                if let origin = components.url {
+                    self.baseURL = origin
+                    UserDefaults.standard.set(origin.absoluteString, forKey: APIClient.savedBaseURLKey)
+                }
             }
             DispatchQueue.main.async { completion(.success(data)) }
         }.resume()
@@ -270,10 +322,7 @@ private enum HTMLParser {
             guard let match = match, let hrefRange = Range(match.range(at: 1), in: html) else { return }
             let href = String(html[hrefRange])
             guard href.contains("/phim/") || href.contains("/xem-phim/") else { return }
-            let pathParts = href.split(separator: "/").map(String.init)
-            guard let markerIndex = pathParts.firstIndex(where: { $0 == "phim" || $0 == "xem-phim" }),
-                  markerIndex + 1 < pathParts.count else { return }
-            let id = pathParts[markerIndex + 1]
+            guard let id = animeSlug(from: href), !id.isEmpty else { return }
             guard !seen.contains(id) else { return }
             let region = String(html[Range(match.range, in: html)!])
             let image = attribute("data-src", in: region)
@@ -397,7 +446,10 @@ private enum HTMLParser {
         return PlayerData(
             link: trimmed.hasPrefix("//") ? "https:" + trimmed : trimmed,
             type: type ?? "hls",
-            headers: ["Referer": APIClient.shared.baseURL.absoluteString],
+            headers: [
+                "Referer": APIClient.shared.baseURL.absoluteString,
+                "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 12_5 like Mac OS X) AppleWebKit/605.1.15 Mobile Safari/604.1"
+            ],
             isContent: false
         )
     }
@@ -438,8 +490,20 @@ private enum HTMLParser {
     }
 
     private static func absolute(_ value: String) -> String {
-        if value.hasPrefix("http") { return value }
-        if value.hasPrefix("/") { return APIClient.shared.baseURL.absoluteString + value }
-        return "https:" + value
+        if value.hasPrefix("http://") || value.hasPrefix("https://") { return value }
+        if value.hasPrefix("//") { return "https:" + value }
+        if let url = URL(string: value, relativeTo: APIClient.shared.baseURL)?.absoluteURL {
+            return url.absoluteString
+        }
+        return value
+    }
+
+    private static func animeSlug(from href: String) -> String? {
+        let url = URL(string: href, relativeTo: APIClient.shared.baseURL)?.absoluteURL
+        let path = url?.path ?? href.split(separator: "?", maxSplits: 1).first.map(String.init) ?? href
+        let parts = path.split(separator: "/").map(String.init)
+        guard let marker = parts.firstIndex(where: { $0 == "phim" || $0 == "xem-phim" }),
+              marker + 1 < parts.count else { return nil }
+        return parts[marker + 1]
     }
 }

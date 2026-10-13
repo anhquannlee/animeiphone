@@ -47,7 +47,11 @@ jobs:
           test -d "$APP_PATH"
           mkdir -p build/unsigned/Payload
           cp -R "$APP_PATH" build/unsigned/Payload/
-          /usr/bin/zip -qry build/AnimeVsub-unsigned.ipa build/unsigned/Payload
+          (
+            cd build/unsigned
+            /usr/bin/zip -qry ../AnimeVsub-unsigned.ipa Payload
+          )
+          unzip -l build/AnimeVsub-unsigned.ipa | grep -E 'Payload/AnimeVsub\.app/Info\.plist$'
 
       - name: Upload iOS artifacts
         uses: actions/upload-artifact@v4

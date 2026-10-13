@@ -14,7 +14,7 @@ open AnimeVsub.xcodeproj
 The client follows the desktop-web API contract: HTML pages plus POST routes
 `/ajax/item`, `/ajax/suggest`, `/ajax/player` and `/ajax/player?v=2019a`.
 The host is configurable through `APIClient.shared.baseURL`; the default is
-`https://animevietsub.xyz`, which is the canonical domain and follows redirects
+`https://animevietsub.pl`, which is the canonical domain and follows redirects
 to the active mirror. The Android `api_hidden` submodule is empty in this
 checkout, so the host may need to be changed to the currently active mirror.
 

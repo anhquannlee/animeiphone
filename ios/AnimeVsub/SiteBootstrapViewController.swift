@@ -62,7 +62,7 @@ final class SiteBootstrapViewController: UIViewController, WKNavigationDelegate 
 
     @objc private func continueLoading() {
         guard let url = webView.url else { return }
-        APIClient.shared.baseURL = url
+        _ = APIClient.shared.setBaseURL(url.absoluteString)
         syncCookies {
             self.onReady(url)
         }

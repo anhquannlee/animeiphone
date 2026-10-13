@@ -35,13 +35,15 @@ struct SearchSuggestion {
 final class APIClient {
     static let shared = APIClient()
 
-    /// The canonical domain redirects to the currently active mirror.
-    var baseURL = URL(string: "https://animevietsub.xyz")!
+    /// The canonical domain used by the AnimeVsub desktop application.
+    var baseURL = URL(string: "https://animevietsub.pl")!
     private let fallbackBaseURLs = [
+        URL(string: "https://animevietsub.pl")!,
+        URL(string: "https://animevietsub.pro")!,
+        URL(string: "https://animevietsub.tv")!,
         URL(string: "https://animevietsub.xyz")!,
         URL(string: "https://animevietsub.link")!,
-        URL(string: "https://animevietsub.nl")!,
-        URL(string: "https://animevietsub.plus")!
+        URL(string: "https://animevietsub.nl")!
     ]
 
     func setBaseURL(_ value: String) -> Bool {
@@ -49,8 +51,13 @@ final class APIClient {
         if !raw.hasPrefix("http://") && !raw.hasPrefix("https://") {
             raw = "https://" + raw
         }
-        guard let url = URL(string: raw), url.host != nil else { return false }
-        baseURL = url
+        guard let url = URL(string: raw), let scheme = url.scheme, let host = url.host else { return false }
+        var components = URLComponents()
+        components.scheme = scheme
+        components.host = host
+        components.port = url.port
+        guard let origin = components.url else { return false }
+        baseURL = origin
         return true
     }
     var session: URLSession = {
@@ -65,7 +72,12 @@ final class APIClient {
 
     func home(completion: @escaping (Result<HomeData, APIError>) -> Void) {
         requestHTML(path: "/", method: "GET", parameters: [:]) { result in
-            completion(result.flatMap { .success(HTMLParser.home(from: $0)) })
+            completion(result.flatMap {
+                let data = HTMLParser.home(from: $0)
+                return data.lastUpdate.isEmpty && data.thisSeason.isEmpty
+                    ? .failure(.unsupportedResponse)
+                    : .success(data)
+            })
         }
     }
 
@@ -224,7 +236,7 @@ private enum HTMLParser {
     }
 
     static func cards(from html: String) -> [AnimeCard] {
-        let pattern = #"<a[^>]+href=["']([^"']+)["'][^>]*>[\s\S]{0,1800}?"#
+        let pattern = #"<a[^>]+href=["']([^"']*(?:/phim/|/xem-phim/)[^"']*)["'][^>]*>[\s\S]*?</a>"#
         guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else { return [] }
         let range = NSRange(html.startIndex..<html.endIndex, in: html)
         var result = [AnimeCard]()
@@ -236,13 +248,24 @@ private enum HTMLParser {
             let id = href.split(separator: "/").last.map(String.init) ?? href
             guard !seen.contains(id) else { return }
             let region = String(html[Range(match.range, in: html)!])
-            let image = attribute("data-src", in: region) ?? attribute("src", in: region) ?? ""
-            let name = text(in: region).trimmingCharacters(in: .whitespacesAndNewlines)
+            let image = attribute("data-src", in: region)
+                ?? attribute("src", in: region)
+                ?? attribute("data-original", in: region)
+                ?? ""
+            let titlePattern = #"<(?:div|span|a)[^>]+class=["'][^"']*\bTitle\b[^"']*["'][^>]*>([\s\S]*?)</(?:div|span|a)>"#
+            let name = firstCapture(titlePattern, in: region)
+                .map { text(in: $0).trimmingCharacters(in: .whitespacesAndNewlines) }
+                ?? attribute("title", in: region)
+                ?? ""
             guard !name.isEmpty else { return }
+            let episode = firstCapture(#"<span[^>]+class=["'][^"']*\bmli-eps\b[^"']*["'][^>]*>([\s\S]*?)</span>"#, in: region)
+                .flatMap { firstCapture(#"<i[^>]*>([^<]+)</i>"#, in: $0) }
+                .map { text(in: $0).trimmingCharacters(in: .whitespacesAndNewlines) }
             seen.insert(id)
             result.append(AnimeCard(
                 animeId: id, image: absolute(image), name: name,
-                lastEpisode: nil, rate: 0, views: nil, quality: nil, process: nil, year: nil
+                lastEpisode: episode.map { ChapterInfo(id: id, name: $0, extra: nil) },
+                rate: 0, views: nil, quality: nil, process: nil, year: nil
             ))
         }
         return result
@@ -292,15 +315,24 @@ private enum HTMLParser {
         return String(html[range])
     }
 
+    private static func firstCapture(_ pattern: String, in html: String) -> String? {
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]),
+              let match = regex.firstMatch(in: html, range: NSRange(html.startIndex..<html.endIndex, in: html)),
+              let range = Range(match.range(at: 1), in: html) else { return nil }
+        return String(html[range])
+    }
+
     private static func text(in html: String) -> String {
         html.replacingOccurrences(of: "<[^>]+>", with: " ", options: .regularExpression)
             .replacingOccurrences(of: "&amp;", with: "&")
             .replacingOccurrences(of: "&quot;", with: "\"")
+            .replacingOccurrences(of: "&#39;", with: "'")
+            .replacingOccurrences(of: "&nbsp;", with: " ")
     }
 
     private static func absolute(_ value: String) -> String {
         if value.hasPrefix("http") { return value }
-        if value.hasPrefix("/") { return "https://animevietsub.xyz" + value }
+        if value.hasPrefix("/") { return APIClient.shared.baseURL.absoluteString + value }
         return "https:" + value
     }
 }

@@ -96,9 +96,24 @@ final class DownloadManager: NSObject, AVAssetDownloadDelegate {
                     didFinishDownloadingTo location: URL) {
         guard let id = tasks[assetDownloadTask],
               let index = records.firstIndex(where: { $0.id == id }) else { return }
-        records[index].localURL = location.path
+        let destinationDirectory = FileManager.default.urls(
+            for: .applicationSupportDirectory, in: .userDomainMask
+        )[0].appendingPathComponent("Downloads", isDirectory: true)
+        try? FileManager.default.createDirectory(at: destinationDirectory,
+                                                  withIntermediateDirectories: true,
+                                                  attributes: nil)
+        let destination = destinationDirectory.appendingPathComponent(id, isDirectory: true)
+        try? FileManager.default.removeItem(at: destination)
+        do {
+            try FileManager.default.moveItem(at: location, to: destination)
+            records[index].localURL = destination.path
+        } catch {
+            records[index].state = "error: không lưu được video (\(error.localizedDescription))"
+        }
         records[index].progress = 1
-        records[index].state = "downloaded"
+        if records[index].localURL != nil {
+            records[index].state = "downloaded"
+        }
         save()
         notify()
     }

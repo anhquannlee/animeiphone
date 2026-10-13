@@ -4,13 +4,16 @@ import AVKit
 final class PlayerViewController: AVPlayerViewController {
     private let chapter: ChapterInfo
     private let episodeTitle: String
+    private let animeID: String
     private var playerURL: URL?
     private var playerData: PlayerData?
     private var didLoad = false
+    private let loadingLabel = UILabel()
 
-    init(chapter: ChapterInfo, title: String) {
+    init(chapter: ChapterInfo, title: String, animeID: String = "") {
         self.chapter = chapter
         self.episodeTitle = title
+        self.animeID = animeID
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -18,6 +21,19 @@ final class PlayerViewController: AVPlayerViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Tải tập", style: .plain,
+                                                             target: self, action: #selector(download))
+        loadingLabel.text = "Đang lấy link phát…"
+        loadingLabel.textColor = .white
+        loadingLabel.textAlignment = .center
+        loadingLabel.translatesAutoresizingMaskIntoConstraints = false
+        if loadingLabel.superview == nil {
+            view.addSubview(loadingLabel)
+            NSLayoutConstraint.activate([
+                loadingLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                loadingLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            ])
+        }
         guard !didLoad else { return }
         didLoad = true
         APIClient.shared.player(chapter: chapter) { [weak self] result in
@@ -31,6 +47,8 @@ final class PlayerViewController: AVPlayerViewController {
                 }
                 self?.playerURL = url
                 self?.playerData = data
+                self?.loadingLabel.removeFromSuperview()
+                self?.navigationItem.rightBarButtonItem?.isEnabled = true
                 let asset = AVURLAsset(url: url, options: [
                     "AVURLAssetHTTPHeaderFieldsKey": data.headers ?? [
                         "Referer": APIClient.shared.baseURL.absoluteString,
@@ -47,7 +65,8 @@ final class PlayerViewController: AVPlayerViewController {
                 self?.player = AVPlayer(playerItem: item)
                 self?.player?.play()
             case .failure(let error):
-                self?.showPlaybackError("\(error)\nMáy chủ chưa trả về link m3u8 hợp lệ hoặc đang chặn truy cập.", url: nil)
+                self?.loadingLabel.text = "Không lấy được link native."
+                self?.showPlaybackError("\(error)\nCó thể mở trình phát website để server tự giải mã.", url: nil)
             }
         }
     }
@@ -66,10 +85,26 @@ final class PlayerViewController: AVPlayerViewController {
                 self?.showDownloadStarted()
             })
         }
+        alert.addAction(UIAlertAction(title: "Mở trình phát website", style: .default) { [weak self] _ in
+            guard let self = self else { return }
+            self.navigationController?.pushViewController(
+                WebPlayerViewController(animeID: self.animeID, chapterID: self.chapter.id),
+                animated: true
+            )
+        })
         alert.addAction(UIAlertAction(title: "Đóng", style: .default) { [weak self] _ in
             self?.dismiss(animated: true)
         })
         present(alert, animated: true)
+    }
+
+    @objc private func download() {
+        guard let url = playerURL else {
+            showPlaybackError("Chưa có link phát để tải. Hãy chờ lấy link hoặc mở trình phát website.", url: nil)
+            return
+        }
+        DownloadManager.shared.start(title: episodeTitle, id: chapter.id, url: url)
+        showDownloadStarted()
     }
 
     private func showDownloadStarted() {

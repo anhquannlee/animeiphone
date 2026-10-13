@@ -399,6 +399,11 @@ private enum HTMLParser {
     }
 
     private static func parsePlayerObject(_ object: Any) -> PlayerData? {
+        if let value = object as? String,
+           let data = value.data(using: .utf8),
+           let nested = try? JSONSerialization.jsonObject(with: data) {
+            return parsePlayerObject(nested)
+        }
         guard let dictionary = object as? [String: Any] else { return nil }
         if let link = dictionary["link"] {
             if let links = link as? [[String: Any]],

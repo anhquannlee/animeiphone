@@ -323,34 +323,83 @@ private enum HTMLParser {
 
     static func player(from response: String) -> Result<PlayerData, APIError> {
         if let data = response.data(using: .utf8),
-           let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-           let link = object["link"] {
-            if let links = link as? [[String: Any]],
-               let first = links.first,
-               let file = first["file"] as? String {
-                return .success(PlayerData(
-                    link: file.hasPrefix("http") ? file : "https:\(file)",
-                    type: first["type"] as? String ?? "hls",
-                    headers: nil,
-                    isContent: false
-                ))
-            }
-            if let file = link as? String, file.hasPrefix("http") {
-                return .success(PlayerData(link: file, type: "hls", headers: nil, isContent: false))
+           let object = try? JSONSerialization.jsonObject(with: data) {
+            if let result = player(from: object) {
+                return .success(result)
             }
         }
         let candidates = [
-            #"https?://[^"' ]+\.m3u8[^"' ]*"#,
-            #"https?://[^"' ]+\.(?:mp4|m3u8)[^"' ]*"#
+            #"https?://[^"'\\ ]+\.m3u8(?:\?[^"'\\ ]*)?"#,
+            #"https?://[^"'\\ ]+\.(?:mp4|m3u8)(?:\?[^"'\\ ]*)?"#,
+            #"//[^"'\\ ]+\.m3u8(?:\?[^"'\\ ]*)?"#
         ]
         for pattern in candidates {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: response, range: NSRange(response.startIndex..<response.endIndex, in: response)),
                let range = Range(match.range, in: response) {
-                return .success(PlayerData(link: String(response[range]), type: "hls", headers: nil, isContent: false))
+                let value = String(response[range])
+                return .success(PlayerData(
+                    link: value.hasPrefix("//") ? "https:" + value : value,
+                    type: "hls",
+                    headers: nil,
+                    isContent: false
+                ))
             }
         }
         return .failure(.unsupportedResponse)
+    }
+
+    private static func player(from object: Any) -> PlayerData? {
+        guard let dictionary = object as? [String: Any] else { return nil }
+        if let link = dictionary["link"] {
+            if let links = link as? [[String: Any]],
+               let first = links.first,
+               let file = first["file"] as? String {
+                return playerData(file: file, type: first["type"] as? String)
+            }
+            if let file = link as? String {
+                if let nestedData = file.data(using: .utf8),
+                   let nested = try? JSONSerialization.jsonObject(with: nestedData),
+                   let result = player(from: nested) {
+                    return result
+                }
+                return playerData(file: file, type: dictionary["type"] as? String)
+            }
+        }
+        if let html = dictionary["html"] as? String {
+            if case .success(let result) = player(from: html) {
+                return result
+            }
+            return nil
+        }
+        if let data = dictionary["data"] {
+            return player(from: data)
+        }
+        return nil
+    }
+
+    private static func player(from value: String) -> Result<PlayerData, APIError> {
+        guard let data = value.data(using: .utf8),
+              let object = try? JSONSerialization.jsonObject(with: data),
+              let result = player(from: object) else {
+            return .failure(.unsupportedResponse)
+        }
+        return .success(result)
+    }
+
+    private static func playerData(file: String, type: String?) -> PlayerData? {
+        let trimmed = file.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.hasPrefix("http://")
+            || trimmed.hasPrefix("https://")
+            || trimmed.hasPrefix("//") else {
+            return nil
+        }
+        return PlayerData(
+            link: trimmed.hasPrefix("//") ? "https:" + trimmed : trimmed,
+            type: type ?? "hls",
+            headers: ["Referer": APIClient.shared.baseURL.absoluteString],
+            isContent: false
+        )
     }
 
     static func slug(_ value: String) -> String {

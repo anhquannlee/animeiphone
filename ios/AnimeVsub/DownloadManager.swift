@@ -54,6 +54,23 @@ final class DownloadManager: NSObject, AVAssetDownloadDelegate {
         records
     }
 
+    func remove(records recordsToRemove: [DownloadRecord]) {
+        let ids = Set(recordsToRemove.map { $0.id })
+        let matchingTasks = tasks.filter { ids.contains($0.value) }.map { $0.key }
+        for task in matchingTasks {
+            task.cancel()
+            tasks.removeValue(forKey: task)
+        }
+        for record in recordsToRemove {
+            if let path = record.localURL {
+                try? FileManager.default.removeItem(atPath: path)
+            }
+        }
+        records.removeAll { ids.contains($0.id) }
+        save()
+        notify()
+    }
+
     func localURL(for id: String) -> URL? {
         guard let record = records.first(where: { $0.id == id }),
               let path = record.localURL else { return nil }

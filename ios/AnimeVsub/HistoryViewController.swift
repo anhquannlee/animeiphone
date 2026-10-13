@@ -98,6 +98,18 @@ final class HistoryViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
     }
 
+    override func tableView(_ tableView: UITableView,
+                            commit editingStyle: UITableViewCell.EditingStyle,
+                            forRowAt indexPath: IndexPath) {
+        guard editingStyle == .delete else { return }
+        DownloadManager.shared.remove(records: groups[indexPath.row].1)
+    }
+
+    override func tableView(_ tableView: UITableView,
+                            titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
+        "Xoá"
+    }
+
 }
 
 private final class DownloadCollectionViewController: UITableViewController {
@@ -156,6 +168,14 @@ private final class DownloadCollectionViewController: UITableViewController {
         controller.player = AVPlayer(url: url)
         navigationController?.pushViewController(controller, animated: true)
         controller.player?.play()
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+
+    override func tableView(_ tableView: UITableView,
+                            commit editingStyle: UITableViewCell.EditingStyle,
+                            forRowAt indexPath: IndexPath) {
+        guard editingStyle == .delete else { return }
+        DownloadManager.shared.remove(records: [records[indexPath.row]])
     }
 
     private func status(_ record: DownloadRecord, percent: String) -> String {

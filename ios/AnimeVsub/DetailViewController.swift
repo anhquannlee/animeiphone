@@ -31,7 +31,7 @@ final class DetailViewController: UIViewController {
         playButton.addTarget(self, action: #selector(play), for: .touchUpInside)
         [imageView, textLabel, playButton].forEach { $0.translatesAutoresizingMaskIntoConstraints = false; view.addSubview($0) }
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            imageView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 16),
             imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             imageView.widthAnchor.constraint(equalToConstant: 130),
             imageView.heightAnchor.constraint(equalToConstant: 195),

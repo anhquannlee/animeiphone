@@ -1,6 +1,6 @@
 import UIKit
 
-final class HomeViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+class HomeViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     var items = [AnimeCard]()
     let collectionView: UICollectionView
     private let refresh = UIRefreshControl()
@@ -29,7 +29,7 @@ final class HomeViewController: UIViewController, UICollectionViewDataSource, UI
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -39,20 +39,21 @@ final class HomeViewController: UIViewController, UICollectionViewDataSource, UI
 
     @objc private func load() {
         APIClient.shared.home { [weak self] result in
-            self?.refresh.endRefreshing()
+            guard let self = self else { return }
+            self.refresh.endRefreshing()
             switch result {
             case .success(let data):
-                self?.items = data.lastUpdate + data.thisSeason + data.hotUpdate
-                self?.collectionView.reloadData()
+                self.items = data.lastUpdate + data.thisSeason + data.hotUpdate
+                self.collectionView.reloadData()
             case .failure(let error):
-                self?.presentError(error)
-            }
-
-            func display(items: [AnimeCard]) {
-                self.items = items
-                collectionView.reloadData()
+                self.presentError(error)
             }
         }
+    }
+
+    func display(items: [AnimeCard]) {
+        self.items = items
+        collectionView.reloadData()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { items.count }

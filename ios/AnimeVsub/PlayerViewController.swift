@@ -15,7 +15,7 @@ final class PlayerViewController: AVPlayerViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        APIClient.shared.player(serverID: chapterID) { [weak self] result in
+        APIClient.shared.player(episodeID: chapterID) { [weak self] result in
             switch result {
             case .success(let data):
                 guard let url = URL(string: data.link) else { return }
